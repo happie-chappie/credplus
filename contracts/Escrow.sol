@@ -2,12 +2,17 @@
 pragma solidity ^0.7.0;
 import "hardhat/console.sol";
 
-import "./interfaces/IERC20.sol";
+import "./interfaces/SafeERC20.sol";
+
 contract Escrow {
+	using SafeERC20 for IERC20;
     address arbiter;
     address depositor;
     address beneficiary;
     uint initialBalance;
+	uint temp = 3000;
+	event StringFailure(string stringFailure);
+    event BytesFailure(bytes bytesFailure);
 
     // aave interest bearing DAI
     // IERC20 aDai = IERC20(0x028171bCA77440897B824Ca71D1c56caC55b68A3);
@@ -27,12 +32,31 @@ contract Escrow {
         // TODO: transfer dai to this contract
     }
 
-    function approve() external {
+    function approve() external returns (bool){
 		console.log("===============");
 		console.log(address(this));
+		console.log(msg.sender);
+		usdt.safeTransferFrom(msg.sender, address(this), temp);
 		// console.log(usdt);
         // usdt.transfer(address(this), initialBalance);
-        usdt.transferFrom(msg.sender, address(this), 200);
+        // usdt.transferFrom(msg.sender, address(this), temp);
+
+		// try addContract.add(_a, _b) returns (uint256 _value) {
+		/*
+		try  usdt.transferFrom(msg.sender, address(this), temp) returns (bool _value) {
+			console.log(_value);
+            return (_value);
+			// return (true);
+        } catch Error(string memory _err) {
+			console.log("===== sadsada =====");
+            emit StringFailure(_err);
+			return false;
+        } catch (bytes memory _err) {
+			console.log("===== sadsada =====");
+            emit BytesFailure(_err);
+			return false;
+        }
+		*/
 
     }
 	/*
