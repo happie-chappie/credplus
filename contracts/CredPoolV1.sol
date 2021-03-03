@@ -2,7 +2,7 @@ pragma solidity ^0.7.0;
 import "hardhat/console.sol";
 import "./interfaces/IERC20.sol";
 
-contract CredPool {
+contract CredPoolV1 {
 	// fixed interest rate
 	uint interestRate = 5;
 
@@ -24,6 +24,4 @@ contract CredPool {
 		console.log(amount);
 		return true;
 	}
-
-
 }

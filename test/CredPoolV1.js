@@ -23,22 +23,26 @@ describe("CredPool contract", function () {
   // liquidityProvider
   // borrower
   beforeEach(async function () {
+    // random
     // fetch the contract
+    // fetching the USDT
+    
+
     // gettting signers
     [contractOwner, liquidityProvider, borrower, ...addrs] = await ethers.getSigners();
-    // fetching the USDT
 
     await hre.network.provider.request({
       method: "hardhat_impersonateAccount",
       params: [billionaireAddress]
     })
+
     // pulling the USDT balance of the billionaire
     // const usdtBalance = await USDT.balanceOf(billionaireAddress);
     // console.log("============");
     // console.log(usdtBalance.toString());
     billionaireSigner = await ethers.provider.getSigner(billionaireAddress);
     USDT = await ethers.getContractAt("IERC20", USDTAddress, billionaireSigner);
-    CredPool = await ethers.getContractFactory("CredPool", billionaireSigner);
+    CredPoolV1 = await ethers.getContractFactory("CredPoolV1", billionaireSigner);
     // const Escrow = await ethers.getContractFactory("Escrow", depositorSigner);
     // console.log(billionaireSigner);
     const credPoolAddress = ethers.utils.getContractAddress({
@@ -49,8 +53,8 @@ describe("CredPool contract", function () {
     await USDT.approve(credPoolAddress, depositAmount);
 
     // DOUBT: deploy vs deployed ?
-    hardhatCredPool = await CredPool.deploy();
-    await hardhatCredPool.deployed();
+    hardhatCredPoolV1 = await CredPoolV1.deploy();
+    await hardhatCredPoolV1.deployed();
 
     // await USDT.approve(escrowAddress, deposit);
 
@@ -58,7 +62,8 @@ describe("CredPool contract", function () {
 
   describe("Deployment", function () {
     it("Should set the right owner", async function () {
-      expect(await hardhatCredPool.owner()).to.equal(contractOwner.address);
+      // expect(await hardhatCredPool.owner()).to.equal(contractOwner.address);
+      expect(await hardhatCredPoolV1.owner()).to.equal(billionaireAddress);
     });
   });
 
@@ -73,7 +78,7 @@ describe("CredPool contract", function () {
 
     it("Liquidity provider should be able to deposit USDT", async function () {
       // expect(await hardhatCredPool.owner()).to.equal(contractOwner.address);
-      await hardhatCredPool.connect(billionaireSigner).deposit(depositAmount);
+      // await hardhatCredPool.connect(billionaireSigner).deposit(depositAmount);
       // const data = await hardhatCredPool.deposit(billionaireAddress, depositAmount);
       // assert(data.totalDebtETH.gt(ethers.utils.parseEther("1")));
     });
