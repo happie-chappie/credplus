@@ -5,7 +5,9 @@ import "./interfaces/IERC20.sol";
 
 contract CredPoolV1 {
 	// fixed interest rate
-	uint interestRate = 5;
+	uint INITIAL_DAI = 100000;
+	uint interestRate = 3;
+	uint daiReserve;
 
 	// dai address
 	address public DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
@@ -16,13 +18,24 @@ contract CredPoolV1 {
 
 	constructor() {
         owner = msg.sender;
+		dai.transferFrom(msg.sender, address(this), INITIAL_DAI);
 	}
 
-	function deposit(uint amount) external returns (bool) {
-		// console.log(address(this));
-		// usdt.approve(address(this), amount);
+	function deposit(uint amount) external {
+		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
-		console.log(amount);
-		return true;
+	}
+
+	function withdraw(uint amount) external {
+		dai.transferFrom(address(this), msg.sender, amount);
+	}
+
+	function borrow(uint amount) external {
+		dai.transferFrom(address(this), msg.sender, amount);
+	}
+
+	function repay(uint amount) external {
+		dai.approve(address(this), amount);
+		dai.transferFrom(msg.sender, address(this), amount);
 	}
 }
