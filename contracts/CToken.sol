@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.7.0;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 
-// This is the main building block for smart contracts.
+// This is the 
 contract CToken {
     // Some string type variables to identify the token.
     string public name = "CredPlus Token";
@@ -19,15 +19,7 @@ contract CToken {
     // A mapping is a key/value map. Here we store each account balance.
     mapping(address => uint256) balances;
 
-    /**
-     * Contract initialization.
-     *
-     * The `constructor` is executed only once when the contract is created.
-     * The `public` modifier makes a function callable from outside the contract.
-     */
     constructor() {
-        // The totalSupply is assigned to transaction sender, which is the account
-        // that is deploying the contract.
         balances[msg.sender] = totalSupply;
         owner = msg.sender;
     }
@@ -43,14 +35,6 @@ contract CToken {
         // If `require`'s first argument evaluates to `false` then the
         // transaction will revert.
         require(balances[msg.sender] >= amount, "Not enough tokens");
-
-        // We can print messages and values using console.log
-        console.log(
-            "Transferring from %s to %s %s tokens",
-            msg.sender,
-            to,
-            amount
-        );
 
         // Transfer the amount.
         balances[msg.sender] -= amount;
