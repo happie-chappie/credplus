@@ -84,4 +84,28 @@ describe("CredPoolV3 contract", function () {
       expect(await DAI.balanceOf(borrower.address)).to.equal(0);
     });
   });
+
+  describe("State 1: Borrower borrowing transactions", function () {
+    before(async () => {
+      // borrowing from the CredPoolV3
+      await hardhatCredPoolV3.connect(borrower).borrow(BORROWING_DAI, hardhatCToken.address);
+    });
+
+    it("Should decrease the reserve DAI pool size by 1k", async function () {
+      // check the reserve DAI balance of the pool
+      expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI - BORROWING_DAI);
+    });
+
+    it("Should increase the borrower DAI balance by 1k", async function () {
+      // check the borrower DAI balance
+      expect(await DAI.balanceOf(borrower.address)).to.equal(BORROWING_DAI);
+    });
+
+    it("Should increase the  reserver CTokens balance by 1k", async function () {
+      expect(await hardhatCToken.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS + BORROWING_DAI);
+      // TODO: why is the total supply not increasing ?
+      // expect(await hardhatCToken.totalSupply()).to.equal(INITIAL_CTOKENS);
+    });
+  });
+
 });

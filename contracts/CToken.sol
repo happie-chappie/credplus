@@ -3,12 +3,18 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 import "./dependencies/ERC20.sol";
 
+// TODO: have to adhere to ICToken
 contract CToken is ERC20 {
 	uint public INITIAL_SUPPLY = 330000;
-	address public new_owner;
+	address public POOL_ADDRESS;
 
-	constructor(address _owner) ERC20("CToken", "CT") {
-		new_owner = _owner;
-	  	_mint(_owner, INITIAL_SUPPLY);
+	constructor(address _pool_address) ERC20("CToken", "CT") {
+		POOL_ADDRESS = _pool_address;
+	  	_mint(POOL_ADDRESS, INITIAL_SUPPLY);
+	}
+
+	function mint(address _owner, uint amount) public returns (bool) {
+	  	_mint(_owner, amount);
+		return true;
 	}
 }
