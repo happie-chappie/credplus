@@ -2,11 +2,12 @@
 pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 import "./dependencies/IERC20.sol";
+import "./CToken.sol";
 
-contract CredPoolV2 {
+contract CredPoolV3 {
 	// fixed interest rate
-	uint INITIAL_DAI = 100000;
-	uint interestRate = 3;
+	uint INITIAL_DAI = 300000;
+	uint interestRate = 10;
 	uint daiReserve;
 
 	// dai address
@@ -21,6 +22,7 @@ contract CredPoolV2 {
 		dai.transferFrom(msg.sender, address(this), INITIAL_DAI);
 	}
 
+	/*
 	function deposit(uint amount) external {
 		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
@@ -38,4 +40,5 @@ contract CredPoolV2 {
 		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
 	}
+	*/
 }
