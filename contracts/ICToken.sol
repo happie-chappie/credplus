@@ -64,6 +64,9 @@ interface ICToken {
 	// TODO: have to add notes
     function mint(address recipient, uint256 amount) external returns (bool); 
 
+	// TODO: have to add notes
+    function burn(address recipient, uint256 amount) external returns (bool); 
+
     /**
      * @dev Emitted when `value` tokens are moved from one account (`from`) to
      * another (`to`).

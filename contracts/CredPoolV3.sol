@@ -39,8 +39,10 @@ contract CredPoolV3 {
 		ICToken(_ctoken).transfer(msg.sender, amount);
 	}
 
-	function withdraw(uint amount) external {
+	function withdraw(uint amount, address _ctoken) external {
 		dai.transferFrom(address(this), msg.sender, amount);
+		ICToken(_ctoken).approve(address(this), amount);
+		ICToken(_ctoken).transferFrom(msg.sender, address(this), amount);
 	}
 
 	function borrow(uint amount, address _ctoken) external {
@@ -48,9 +50,10 @@ contract CredPoolV3 {
 		ICToken(_ctoken).mint(address(this), amount);
 	}
 
-	function repay(uint amount) external {
+	function repay(uint amount, address _ctoken) external {
 		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
+		ICToken(_ctoken).burn(address(this), amount);
 	}
 }
 

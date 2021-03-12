@@ -80,7 +80,7 @@ describe("CredPoolV3 contract", function () {
       expect(await hardhatCToken.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS);
     });
 
-    it("Should set the initial supply of CTokens to 330k", async function () {
+    it("Should set the initial supply of CTokens to 300k", async function () {
       expect(await hardhatCToken.totalSupply()).to.equal(INITIAL_CTOKENS);
     });
 
@@ -140,4 +140,51 @@ describe("CredPoolV3 contract", function () {
     });
   });
 
+  describe("State 3: Borrower repaying transactions", function () {
+    before(async () => {
+      // we approve the CredPoolV2 to move DAI funds from borrower
+      await DAI.connect(borrower).approve(credPoolAddress, BORROWING_DAI);
+      await hardhatCredPoolV3.connect(borrower).repay(BORROWING_DAI, hardhatCToken.address);
+    });
+
+    it("Should increase the reserve DAI pool size by 1k", async function () {
+      // check the reserve DAI balance of the pool
+      expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI+LENDING_DAI);
+    });
+
+    it("Should decrease the borrower DAI balance to zero", async function () {
+      // check the borrower DAI balance
+      expect(await DAI.balanceOf(borrower.address)).to.equal(0);
+    });
+
+    it("Should decrease the reserve CTokens balance by 1k", async function () {
+      expect(await hardhatCToken.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS-BORROWING_DAI);
+    });
+  });
+
+  describe("State 4: Lender withdrawing transactions", function () {
+    before(async () => {
+      // approve CToken spend to the creditPool
+      await hardhatCToken.connect(lender).approve(credPoolAddress, INITIAL_DAI);
+      await hardhatCredPoolV3.connect(lender).withdraw(LENDING_DAI, hardhatCToken.address);
+    });
+
+    it("Lender should have 1k DAI balance", async function (){
+      expect(await DAI.balanceOf(lender.address)).to.equal(LENDING_DAI);
+    });
+
+    it("Should decrease the reserve DAI pool size by 1k", async function () {
+      // check the reserve DAI balance of the pool
+      expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI);
+    });
+
+    it("Should increase the reserve CTokens balance by 1k", async function () {
+      expect(await hardhatCToken.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS);
+    });
+
+    it("Should decrease the lender CToken balance to zero", async function () {
+      // check the lender CToken balance
+      expect(await hardhatCToken.balanceOf(borrower.address)).to.equal(0);
+    });
+  });
 });

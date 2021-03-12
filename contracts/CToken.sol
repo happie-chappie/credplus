@@ -17,4 +17,9 @@ contract CToken is ERC20 {
 	  	_mint(_owner, amount);
 		return true;
 	}
+
+	function burn(address _owner, uint amount) public returns (bool) {
+	  	_burn(_owner, amount);
+		return true;
+	}
 }
