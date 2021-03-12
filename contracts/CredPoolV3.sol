@@ -4,6 +4,16 @@ import "hardhat/console.sol";
 import "./dependencies/IERC20.sol";
 import "./ICToken.sol";
 
+/*
+This version of the credpool handles two types of users
+Borrowers
+	- Borrow
+	- Repay
+Depositors
+	- Deposit
+	- Withdraw
+There is no interest rate
+*/
 contract CredPoolV3 {
 	// fixed interest rate
 	uint INITIAL_DAI = 300000;
@@ -23,9 +33,10 @@ contract CredPoolV3 {
 		dai.transferFrom(msg.sender, address(this), INITIAL_DAI);
 	}
 
-	function deposit(uint amount) external {
+	function deposit(uint amount, address _ctoken) external {
 		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
+		ICToken(_ctoken).transfer(msg.sender, amount);
 	}
 
 	function withdraw(uint amount) external {
@@ -34,7 +45,6 @@ contract CredPoolV3 {
 
 	function borrow(uint amount, address _ctoken) external {
 		dai.transferFrom(address(this), msg.sender, amount);
-		console.log("The amount is ", amount);
 		ICToken(_ctoken).mint(address(this), amount);
 	}
 
@@ -43,3 +53,12 @@ contract CredPoolV3 {
 		dai.transferFrom(msg.sender, address(this), amount);
 	}
 }
+
+/*
+
+		// ICToken(_ctoken).approve(msg.sender, amount);
+		// uint balance = ICToken(_ctoken).balanceOf(address(this));
+		// console.log("=============");
+		// console.log(amount);
+		// console.log(balance);
+*/
