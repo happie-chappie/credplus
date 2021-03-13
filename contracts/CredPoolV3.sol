@@ -21,14 +21,17 @@ contract CredPoolV3 {
 	uint daiReserve;
 
 	// dai address
-	address public DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+	// address public DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+	address public DAI_ADDRESS;
 	ICToken public CToken;
-	IERC20 public dai = IERC20(DAI_ADDRESS);
+	IERC20 public dai; 
 
     // An address type variable is used to store ethereum accounts.
     address public owner;
 
-	constructor() {
+	constructor(address _dai_address) {
+		DAI_ADDRESS = _dai_address;
+		dai = IERC20(DAI_ADDRESS);
         owner = msg.sender;
 		dai.transferFrom(msg.sender, address(this), INITIAL_DAI);
 	}

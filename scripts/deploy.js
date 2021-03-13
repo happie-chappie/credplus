@@ -12,8 +12,31 @@ async function main() {
     );
   }
 
-  const [deployer] = await ethers.getSigners();
-  const DEPLOYER_ADDRESS = await deployer.getAddress();
+  let deployer;
+  let DEPLOYER_ADDRESS;
+  let DAI_ADDRESS;
+  const BILLIONAIRE_ADDRESS = "0x564286362092D8e7936f0549571a803B203aAceD";
+  // const KOVAN_ADDRESS = "0xD0A16a95669B14161B09dafFa20B24575b77b731";
+  const DAI_MAINNET_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+  const DAI_KOVAN_ADDRESS = "0xff795577d9ac8bd7d90ee22b6c1703490b6512fd";  // kovan
+  // const deployer = await ethers.provider.getSigner(BILLIONAIRE_ADDRESS);
+
+  if (network.name === "localhost") {
+    DEPLOYER_ADDRESS = BILLIONAIRE_ADDRESS;
+    deployer = await ethers.provider.getSigner(DEPLOYER_ADDRESS);
+    DAI_ADDRESS = DAI_MAINNET_ADDRESS;
+   
+    await hre.network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [DEPLOYER_ADDRESS]
+    })
+  }
+  if (network.name === "kovan") {
+    // DEPLOYER_ADDRESS = KOVAN_ADDRESS;
+    [deployer] = await ethers.getSigners();
+    DEPLOYER_ADDRESS = await deployer.getAddress();
+    DAI_ADDRESS = DAI_KOVAN_ADDRESS;
+  }
   console.log(
     "Deploying the contracts with the account:",
     DEPLOYER_ADDRESS 
@@ -21,30 +44,22 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const BILLIONAIRE_ADDRESS = "0x564286362092D8e7936f0549571a803B203aAceD";
-  const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
   const INITIAL_DAI = 300000;
- 
-  await hre.network.provider.request({
-    method: "hardhat_impersonateAccount",
-    params: [BILLIONAIRE_ADDRESS]
-  })
 
-  const billionaireSigner = await ethers.provider.getSigner(BILLIONAIRE_ADDRESS);
-  const DAI = await ethers.getContractAt("IERC20", DAI_ADDRESS, billionaireSigner);
+  const DAI = await ethers.getContractAt("IERC20", DAI_ADDRESS, deployer);
 
   credPoolAddress = ethers.utils.getContractAddress({
-    from: BILLIONAIRE_ADDRESS,
-    nonce: (await ethers.provider.getTransactionCount(BILLIONAIRE_ADDRESS))+  1,
+    from: DEPLOYER_ADDRESS,
+    nonce: (await ethers.provider.getTransactionCount(DEPLOYER_ADDRESS))+  1,
   });
 
-  let daiBalance = await DAI.balanceOf(BILLIONAIRE_ADDRESS);
+  let daiBalance = await DAI.balanceOf(DEPLOYER_ADDRESS);
   daiBalance = daiBalance.toString();
   console.log("DAI balance:", (daiBalance));
   await DAI.approve(credPoolAddress, INITIAL_DAI);
 
-  const CredPoolV3 = await ethers.getContractFactory("CredPoolV3", billionaireSigner);
-  const credPoolV3 = await CredPoolV3.deploy();
+  const CredPoolV3 = await ethers.getContractFactory("CredPoolV3", deployer);
+  const credPoolV3 = await CredPoolV3.deploy(DAI_ADDRESS);
   await credPoolV3.deployed();
 
   const CToken = await ethers.getContractFactory("CToken");

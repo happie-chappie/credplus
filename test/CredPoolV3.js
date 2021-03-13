@@ -51,7 +51,7 @@ describe("CredPoolV3 contract", function () {
     // await DAI.approve(lender.address, LENDING_DAI);
     // transfer 10K DAI to lender
     // await DAI.connect(billionaireSigner).transfer(lender.address, LENDING_DAI);
-    hardhatCredPoolV3 = await CredPoolV3.deploy();
+    hardhatCredPoolV3 = await CredPoolV3.deploy(DAI_ADDRESS);
     await hardhatCredPoolV3.deployed();
 
     hardhatCToken = await CToken.deploy(credPoolAddress);
