@@ -13,6 +13,7 @@ import contractAddress from "../contracts/contract-address.json";
 // These other components are just presentational ones: they don't have any
 // logic. They just render HTML.
 import { NoWalletDetected } from "./NoWalletDetected";
+import { NetworkErrorMessage } from "./NetworkErrorMessage";
 // import { ConnectWallet } from "./ConnectWallet";
 // import { Loading } from "./Loading";
 // import { Transfer } from "./Transfer";
@@ -103,6 +104,12 @@ export class Dapp extends React.Component {
           networkError={this.state.networkError}
           dismiss={() => this._dismissNetworkError()}
 	/>
+          {this.state.networkError && (
+            <NetworkErrorMessage 
+              message={this.state.networkError} 
+	      dismiss={() => this._dismissNetworkError()}
+            />
+          )}
     </Container>
     );
   }
@@ -146,6 +153,7 @@ export class Dapp extends React.Component {
     
     // We reset the dapp state if the network is changed
     window.ethereum.on("networkChanged", ([networkId]) => {
+      console.log("=== updated network =====");
       this._stopPollingData();
       this._resetState();
     });
@@ -297,6 +305,7 @@ export class Dapp extends React.Component {
 
   // This method resets the state
   _resetState() {
+    console.log("=== network changed ====");
     this.setState(this.initialState);
   }
 
