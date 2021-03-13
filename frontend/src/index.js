@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import { lightBlue } from '@material-ui/core/colors';
+// import { lightBlue } from '@material-ui/core/colors';
 
 import { Dapp } from "./components/Dapp";
 // We import bootstrap here, but you can remove if you want
@@ -15,11 +15,13 @@ const theme = createMuiTheme({
   palette: {
     primary: {
       // Purple and green play nicely together.
-      main: lightBlue[500],
+      // main: lightBlue[500],
+      main: '#607d8b',
     },
     secondary: {
       // This is green.A700 as hex.
-      main: '#f45303',
+      // main: '#f45303',
+      main: "#8b6e60",
     },
   },
 });

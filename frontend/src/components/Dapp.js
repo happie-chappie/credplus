@@ -13,12 +13,12 @@ import contractAddress from "../contracts/contract-address.json";
 // These other components are just presentational ones: they don't have any
 // logic. They just render HTML.
 import { NoWalletDetected } from "./NoWalletDetected";
-import { ConnectWallet } from "./ConnectWallet";
-import { Loading } from "./Loading";
-import { Transfer } from "./Transfer";
-import { TransactionErrorMessage } from "./TransactionErrorMessage";
-import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
-import { NoTokensMessage } from "./NoTokensMessage";
+// import { ConnectWallet } from "./ConnectWallet";
+// import { Loading } from "./Loading";
+// import { Transfer } from "./Transfer";
+// import { TransactionErrorMessage } from "./TransactionErrorMessage";
+// import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
+// import { NoTokensMessage } from "./NoTokensMessage";
 
 import AppBar from "./AppBar";
 

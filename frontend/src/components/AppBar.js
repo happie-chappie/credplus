@@ -4,12 +4,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import Box from '@material-ui/core/Box';
+// import IconButton from '@material-ui/core/IconButton';
+// import Toolbar from '@material-ui/core/Toolbar';
+// import MenuIcon from '@material-ui/icons/Menu';
+
+import WalletDetails from "./WalletDetails";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,7 +27,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, state, ...other } = props;
+
+  if (index === 0) {
+    return (
+      <div
+	role="tabpanel"
+	hidden={value !== index}
+	id={`simple-tabpanel-${index}`}
+	aria-labelledby={`simple-tab-${index}`}
+	{...other}
+      >
+	<WalletDetails state={state}/>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -36,9 +52,9 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
+	<Box p={3}>
+	  <Typography>{children}</Typography>
+	</Box>
       )}
     </div>
   );
@@ -71,29 +87,37 @@ export default function ButtonAppBar({
     setValue(newValue);
   };
 
+  // console.log("=========");
+  // console.log(state);
+
   return (
     <div className={classes.root}>
       <AppBar position="static" style={{display: "flex", fontSize: 48, flexDirection: "row", height: 80, justifyContent: "space-between" }}>
-	  <Tabs value={value} onChange={handleChange} aria-label="simple tabs example" style={{fontSize: 48, height: 80}} >
-	    <Tab label="Pool" {...a11yProps(0)} style={{height: 80}} />
-	    <Tab label="Borrow" {...a11yProps(1)} />
-	    <Tab label="Lend" {...a11yProps(2)} />
-	  </Tabs>
-	  <Button
-	    // variant="contained"
-	    color="inherit"
-	    style={{ border: "1px solid #f45303",justify: "flex-end", margin: 20}}
-	    onClick={connectWallet}
-	  >Connect Wallet</Button>
+	<Tabs value={value} onChange={handleChange} aria-label="simple tabs example" style={{fontSize: 48, height: 80}} >
+	  <Tab label="Pool" {...a11yProps(0)} style={{height: 80}} />
+	  <Tab label="Borrow" {...a11yProps(1)} />
+	  <Tab label="Lend" {...a11yProps(2)} />
+	  <Tab label="Wallet" {...a11yProps(3)} />
+	</Tabs>
+	<Button
+	  // variant="contained"
+	  color="inherit"
+	  style={{ border: "1px solid #f45303",justify: "flex-end", margin: 20}}
+	  onClick={connectWallet}
+	>Connect Wallet</Button>
       </AppBar>
-      <TabPanel value={value} index={0}>
-        Item One
+      <TabPanel value={value} index={0} state={state}>
+	<div>
+	  Item One
+	</div>
       </TabPanel>
-      <TabPanel value={value} index={1}>
-        Item Two
+      <TabPanel value={value} index={1} state={state}>
+	Item Two
       </TabPanel>
-      <TabPanel value={value} index={2}>
-        Item Three
+      <TabPanel value={value} index={2} state={state}>
+	Item Three
+      </TabPanel>
+      <TabPanel value={value} index={3} state={state}>
       </TabPanel>
     </div>
   );
