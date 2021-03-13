@@ -71,6 +71,12 @@ describe("CredPoolV3 contract", function () {
     });
   });
 
+  describe("Testing the CredPoolV3 functionality", function () {
+    it("Should get pool DAI balance and it should be equal to 300k", async function () {
+      expect(await hardhatCredPoolV3.getDAIBalance()).to.equal(INITIAL_DAI);
+    });
+  });
+
   describe("State 0: Initial state of the reserve pool", function () {
     it("Should set the initial reserve pool DAI balance to 300k", async function () {
       expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI);

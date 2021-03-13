@@ -38,9 +38,14 @@ export default function Variants({state}) {
 	<Typography>  Wallet Address </Typography>
 	<Typography>  {state.selectedAddress} </Typography>
 	    {state.tokenData && (
+	      <div>
 	      <Typography>
 		  {state.tokenData.name}: {state.balance.toString()} {state.tokenData.symbol}
 		</Typography>
+	      <Typography>
+		  {state.poolData.daiBalance}
+		</Typography>
+	      </div>
 	    )}
       </Paper>
     </div>

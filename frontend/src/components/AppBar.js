@@ -87,8 +87,8 @@ export default function ButtonAppBar({
     setValue(newValue);
   };
 
-  // console.log("=========");
-  // console.log(state);
+  console.log("=========");
+  console.log(state);
 
   return (
     <div className={classes.root}>

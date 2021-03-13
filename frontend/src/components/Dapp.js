@@ -6,8 +6,12 @@ import { ethers } from "ethers";
 
 // We import the contract's artifacts and address here, as we are going to be
 // using them with ethers
-import TokenArtifact from "../contracts/Token.json";
-import contractAddress from "../contracts/contract-address.json";
+import TokenArtifact from "../contracts/slug.json";
+import contractAddress from "../contracts/slug-contract-address.json";
+import CTokenArtifact from "../contracts/ctoken.json";
+import CTokenContractAddress from "../contracts/ctoken-contract-address.json";
+import PoolArtifact from "../contracts/pool.json";
+import PoolContractAddress from "../contracts/pool-contract-address.json";
 
 // All the logic of this dapp is contained in the Dapp component.
 // These other components are just presentational ones: they don't have any
@@ -58,6 +62,7 @@ export class Dapp extends React.Component {
       txBeingSent: undefined,
       transactionError: undefined,
       networkError: undefined,
+      poolData: undefined,
     };
 
     this.state = this.initialState;
@@ -154,7 +159,7 @@ export class Dapp extends React.Component {
     
     // We reset the dapp state if the network is changed
     window.ethereum.on("networkChanged", ([networkId]) => {
-      console.log("=== updated network =====");
+      // console.log("=== updated network =====");
       this._stopPollingData();
       this._resetState();
     });
@@ -175,6 +180,7 @@ export class Dapp extends React.Component {
     // sample project, but you can reuse the same initialization pattern.
     this._intializeEthers();
     this._getTokenData();
+    this._getPoolData();
     this._startPollingData();
   }
 
@@ -187,6 +193,11 @@ export class Dapp extends React.Component {
     this._token = new ethers.Contract(
       contractAddress.Token,
       TokenArtifact.abi,
+      this._provider.getSigner(0)
+    );
+    this._pool = new ethers.Contract(
+      PoolContractAddress.Pool,
+      PoolArtifact.abi,
       this._provider.getSigner(0)
     );
   }
@@ -217,6 +228,13 @@ export class Dapp extends React.Component {
     const symbol = await this._token.symbol();
 
     this.setState({ tokenData: { name, symbol } });
+  }
+
+  async _getPoolData() {
+    let daiBalance = await this._pool.getDAIBalance();
+    daiBalance = daiBalance.toString();
+
+    this.setState({ poolData: { daiBalance } });
   }
 
   async _updateBalance() {

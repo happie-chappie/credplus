@@ -33,6 +33,11 @@ contract CredPoolV3 {
 		dai.transferFrom(msg.sender, address(this), INITIAL_DAI);
 	}
 
+	function getDAIBalance() external view returns (uint) {
+		uint balance = dai.balanceOf(address(this));
+		return balance;
+	}
+
 	function deposit(uint amount, address _ctoken) external {
 		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
