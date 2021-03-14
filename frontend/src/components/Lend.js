@@ -35,15 +35,7 @@ export default function Variants({state}) {
 	variant="outlined"
 	elevation={3}
       >
-	<Typography>  Wallet Address </Typography>
-	<Typography>  {state.selectedAddress} </Typography>
-	    {state.tokenData && (
-	      <div>
-	      <Typography>
-		  {state.tokenData.name}: {state.balance.toString()} {state.tokenData.symbol}
-		</Typography>
-	      </div>
-	    )}
+	<Typography>  Lend </Typography>
       </Paper>
     </div>
   );

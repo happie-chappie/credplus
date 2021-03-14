@@ -6,8 +6,8 @@ import { ethers } from "ethers";
 
 // We import the contract's artifacts and address here, as we are going to be
 // using them with ethers
-import TokenArtifact from "../contracts/slug.json";
-import contractAddress from "../contracts/slug-contract-address.json";
+import TokenArtifact from "../contracts/token.json";
+import contractAddress from "../contracts/token-contract-address.json";
 import CTokenArtifact from "../contracts/ctoken.json";
 import CTokenContractAddress from "../contracts/ctoken-contract-address.json";
 import PoolArtifact from "../contracts/pool.json";
@@ -21,8 +21,8 @@ import { NetworkErrorMessage } from "./NetworkErrorMessage";
 // import { ConnectWallet } from "./ConnectWallet";
 // import { Loading } from "./Loading";
 // import { Transfer } from "./Transfer";
-// import { TransactionErrorMessage } from "./TransactionErrorMessage";
-// import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
+import { TransactionErrorMessage } from "./TransactionErrorMessage";
+import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 // import { NoTokensMessage } from "./NoTokensMessage";
 
 import AppBar from "./AppBar";
@@ -30,8 +30,8 @@ import AppBar from "./AppBar";
 // This is the Hardhat Network id, you might change it in the hardhat.config.js
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
 // to use when deploying to other networks.
-// const HARDHAT_NETWORK_ID = '31337';  // dev
-const HARDHAT_NETWORK_ID = '42';  // kovan
+const HARDHAT_NETWORK_ID = '31337';  // dev
+// const HARDHAT_NETWORK_ID = '42';  // kovan
 
 // This is an error code that indicates that the user canceled a transaction
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
@@ -63,6 +63,7 @@ export class Dapp extends React.Component {
       transactionError: undefined,
       networkError: undefined,
       poolData: undefined,
+      walletData: undefined,
     };
 
     this.state = this.initialState;
@@ -109,13 +110,23 @@ export class Dapp extends React.Component {
           connectWallet={() => this._connectWallet()} 
           networkError={this.state.networkError}
           dismiss={() => this._dismissNetworkError()}
+	  poolAction={(type, amount) => this._poolAction(type, amount)}
 	/>
-          {this.state.networkError && (
-            <NetworkErrorMessage 
-              message={this.state.networkError} 
-	      dismiss={() => this._dismissNetworkError()}
-            />
-          )}
+	{this.state.networkError && (
+	  <NetworkErrorMessage 
+	    message={this.state.networkError} 
+	    dismiss={() => this._dismissNetworkError()}
+	  />
+	)}
+	{this.state.txBeingSent && (
+	  <WaitingForTransactionMessage txHash={this.state.txBeingSent} />
+	)}
+	{this.state.transactionError && (
+	  <TransactionErrorMessage
+	    message={this._getRpcErrorMessage(this.state.transactionError)}
+	    dismiss={() => this._dismissTransactionError()}
+	  />
+	)}
     </Container>
     );
   }
@@ -181,6 +192,7 @@ export class Dapp extends React.Component {
     this._intializeEthers();
     this._getTokenData();
     this._getPoolData();
+    this._getWalletData();
     this._startPollingData();
   }
 
@@ -198,6 +210,11 @@ export class Dapp extends React.Component {
     this._pool = new ethers.Contract(
       PoolContractAddress.Pool,
       PoolArtifact.abi,
+      this._provider.getSigner(0)
+    );
+    this._ctoken = new ethers.Contract(
+      CTokenContractAddress.CToken,
+      CTokenArtifact.abi,
       this._provider.getSigner(0)
     );
   }
@@ -230,16 +247,70 @@ export class Dapp extends React.Component {
     this.setState({ tokenData: { name, symbol } });
   }
 
-  async _getPoolData() {
-    let daiBalance = await this._pool.getDAIBalance();
-    daiBalance = daiBalance.toString();
+  async _getWalletData() {
+    const daiBalance = await this._pool.getUserDAIBalance();
+    const ctokenBalance = await this._pool.getUserCTokenBalance(CTokenContractAddress.CToken);
 
-    this.setState({ poolData: { daiBalance } });
+    this.setState({ walletData: { daiBalance, ctokenBalance } });
+  }
+
+  async _getPoolData() {
+    const daiBalance = await this._pool.getDAIBalance();
+    const ctokenBalance = await this._pool.getCTokenBalance(CTokenContractAddress.CToken);
+
+    this.setState({ poolData: { daiBalance, ctokenBalance} });
   }
 
   async _updateBalance() {
     const balance = await this._token.balanceOf(this.state.selectedAddress);
     this.setState({ balance });
+  }
+
+  async _poolAction(type, amount) {
+    try {
+      this._dismissTransactionError();
+
+      let tx;
+
+      if (type === "approveDAI") {
+	tx = await this._pool.approveDAITransfer(ethers.utils.parseUnits("1"));
+	this.setState({ txBeingSent: tx.hash });
+      } else if (type === "approveCToken") {
+	tx = await this._pool.approveCTokenTransfer(amount, CTokenContractAddress.CToken);
+	this.setState({ txBeingSent: tx.hash });
+      } else if (type === "borrow") {
+	tx = await this._pool.borrow(amount, CTokenContractAddress.CToken);
+	this.setState({ txBeingSent: tx.hash });
+      } else if (type === "withdraw") {
+	tx = await this._pool.withdraw(amount, CTokenContractAddress.CToken);
+	this.setState({ txBeingSent: tx.hash });
+      } else if (type === "deposit") {
+	tx = await this._pool.deposit(ethers.utils.parseUnits("1"), CTokenContractAddress.CToken);
+	this.setState({ txBeingSent: tx.hash });
+      } else if (type === "repay") {
+	tx = await this._pool.repay(amount, CTokenContractAddress.CToken);
+	this.setState({ txBeingSent: tx.hash });
+      } else {
+	return 0;
+      }
+
+      const receipt = await tx.wait();
+
+      if (receipt.status === 0) {
+        throw new Error("Transaction failed");
+      }
+
+      await this._getPoolData();
+      await this._getWalletData();
+    } catch (error) {
+      if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
+        return;
+      }
+      console.error(error);
+      this.setState({ transactionError: error });
+    } finally {
+      this.setState({ txBeingSent: undefined });
+    }
   }
 
   // This method sends an ethereum transaction to transfer tokens.

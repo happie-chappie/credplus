@@ -36,12 +36,19 @@ contract CredPoolV3 {
 		dai.transferFrom(msg.sender, address(this), INITIAL_DAI);
 	}
 
-	function getDAIBalance() external view returns (uint) {
-		uint balance = dai.balanceOf(address(this));
-		return balance;
+	function approveDAITransfer(uint amount) external returns (bool) {
+		dai.approve(address(this), amount);
+		return true;
+	}
+
+	function approveCTokenTransfer(uint amount, address _ctoken) external returns (bool) {
+		ICToken(_ctoken).approve(address(this), amount);
+		return true;
 	}
 
 	function deposit(uint amount, address _ctoken) external {
+		console.log(amount);
+		console.log(dai.balanceOf(msg.sender));
 		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
 		ICToken(_ctoken).transfer(msg.sender, amount);
@@ -49,7 +56,6 @@ contract CredPoolV3 {
 
 	function withdraw(uint amount, address _ctoken) external {
 		dai.transferFrom(address(this), msg.sender, amount);
-		ICToken(_ctoken).approve(address(this), amount);
 		ICToken(_ctoken).transferFrom(msg.sender, address(this), amount);
 	}
 
@@ -59,9 +65,29 @@ contract CredPoolV3 {
 	}
 
 	function repay(uint amount, address _ctoken) external {
-		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
 		ICToken(_ctoken).burn(address(this), amount);
+	}
+
+	/******* VIEWS ********/
+	function getDAIBalance() external view returns (uint) {
+		uint balance = dai.balanceOf(address(this));
+		return balance;
+	}
+
+	function getCTokenBalance(address _ctoken) external view returns (uint) {
+		uint balance = ICToken(_ctoken).balanceOf(address(this));
+		return balance;
+	}
+
+	function getUserDAIBalance() external view returns (uint) {
+		uint balance = dai.balanceOf(msg.sender);
+		return balance;
+	}
+
+	function getUserCTokenBalance(address _ctoken) external view returns (uint) {
+		uint balance = ICToken(_ctoken).balanceOf(msg.sender);
+		return balance;
 	}
 }
 

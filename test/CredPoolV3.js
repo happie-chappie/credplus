@@ -71,9 +71,21 @@ describe("CredPoolV3 contract", function () {
     });
   });
 
-  describe("Testing the CredPoolV3 functionality", function () {
+  describe("Testing the CredPoolV3 views", function () {
     it("Should get pool DAI balance and it should be equal to 300k", async function () {
       expect(await hardhatCredPoolV3.getDAIBalance()).to.equal(INITIAL_DAI);
+    });
+
+    it("Should get pool CTokens balance and it should be equal to 300k", async function () {
+      expect(await hardhatCredPoolV3.getCTokenBalance(hardhatCToken.address)).to.equal(INITIAL_CTOKENS);
+    });
+
+    it("Should get borrower DAI balance and it should be equal to 0", async function () {
+      expect(await hardhatCredPoolV3.connect(borrower).getUserDAIBalance()).to.equal(0);
+    });
+
+    it("Should get borrower CTokens balance and it should be equal to 0", async function () {
+      expect(await hardhatCredPoolV3.connect(borrower).getUserCTokenBalance(hardhatCToken.address)).to.equal(0);
     });
   });
 
@@ -109,6 +121,7 @@ describe("CredPoolV3 contract", function () {
     it("Should increase the borrower DAI balance by 1k", async function () {
       // check the borrower DAI balance
       expect(await DAI.balanceOf(borrower.address)).to.equal(BORROWING_DAI);
+      expect(await hardhatCredPoolV3.connect(borrower).getUserDAIBalance()).to.equal(BORROWING_DAI);
     });
 
     it("Should increase the reserve CTokens balance by 1k", async function () {
@@ -125,6 +138,7 @@ describe("CredPoolV3 contract", function () {
       // lender approving CredPoolV2 to spend DAI
       await DAI.connect(lender).approve(credPoolAddress, LENDING_DAI);
       // lender depositing to the CredPoolV2
+      await hardhatCredPoolV3.connect(lender).approveDAITransfer(LENDING_DAI);
       await hardhatCredPoolV3.connect(lender).deposit(LENDING_DAI, hardhatCToken.address);
     });
 
@@ -143,6 +157,7 @@ describe("CredPoolV3 contract", function () {
 
     it("Should increase the lender CTokens balance by 1k", async function () {
       expect(await hardhatCToken.balanceOf(lender.address)).to.equal(LENDING_DAI);
+      expect(await hardhatCredPoolV3.connect(lender).getUserCTokenBalance(hardhatCToken.address)).to.equal(LENDING_DAI);
     });
   });
 
@@ -150,6 +165,7 @@ describe("CredPoolV3 contract", function () {
     before(async () => {
       // we approve the CredPoolV2 to move DAI funds from borrower
       await DAI.connect(borrower).approve(credPoolAddress, BORROWING_DAI);
+      await hardhatCredPoolV3.connect(borrower).approveDAITransfer(LENDING_DAI);
       await hardhatCredPoolV3.connect(borrower).repay(BORROWING_DAI, hardhatCToken.address);
     });
 
@@ -172,6 +188,7 @@ describe("CredPoolV3 contract", function () {
     before(async () => {
       // approve CToken spend to the creditPool
       await hardhatCToken.connect(lender).approve(credPoolAddress, INITIAL_DAI);
+      await hardhatCredPoolV3.connect(lender).approveCTokenTransfer(LENDING_DAI, hardhatCToken.address);
       await hardhatCredPoolV3.connect(lender).withdraw(LENDING_DAI, hardhatCToken.address);
     });
 

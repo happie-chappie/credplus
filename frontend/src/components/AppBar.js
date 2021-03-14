@@ -12,6 +12,9 @@ import Box from '@material-ui/core/Box';
 // import MenuIcon from '@material-ui/icons/Menu';
 
 import WalletDetails from "./WalletDetails";
+import Borrow from "./Borrow";
+import Lend from "./Lend";
+import All from "./All";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,9 +30,51 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function TabPanel(props) {
-  const { children, value, index, state, ...other } = props;
+  const { children, value, index, state, poolAction, ...other } = props;
 
   if (index === 0) {
+    return (
+      <div
+	role="tabpanel"
+	hidden={value !== index}
+	id={`simple-tabpanel-${index}`}
+	aria-labelledby={`simple-tab-${index}`}
+	{...other}
+      >
+	<All state={state} poolAction={poolAction} />
+      </div>
+    );
+  }
+
+  if (index === 1) {
+    return (
+      <div
+	role="tabpanel"
+	hidden={value !== index}
+	id={`simple-tabpanel-${index}`}
+	aria-labelledby={`simple-tab-${index}`}
+	{...other}
+      >
+	<Borrow state={state}/>
+      </div>
+    );
+  }
+
+  if (index === 2) {
+    return (
+      <div
+	role="tabpanel"
+	hidden={value !== index}
+	id={`simple-tabpanel-${index}`}
+	aria-labelledby={`simple-tab-${index}`}
+	{...other}
+      >
+	<Lend state={state}/>
+      </div>
+    );
+  }
+
+  if (index === 3) {
     return (
       <div
 	role="tabpanel"
@@ -42,22 +87,6 @@ function TabPanel(props) {
       </div>
     );
   }
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-	<Box p={3}>
-	  <Typography>{children}</Typography>
-	</Box>
-      )}
-    </div>
-  );
 }
 
 TabPanel.propTypes = {
@@ -79,6 +108,7 @@ export default function ButtonAppBar({
   connectWallet,
   networkError,
   dismiss,
+  poolAction,
 }) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
@@ -87,8 +117,8 @@ export default function ButtonAppBar({
     setValue(newValue);
   };
 
-  console.log("=========");
-  console.log(state);
+  // console.log("=========");
+  // console.log(state);
 
   return (
     <div className={classes.root}>
@@ -106,16 +136,11 @@ export default function ButtonAppBar({
 	  onClick={connectWallet}
 	>Connect Wallet</Button>
       </AppBar>
-      <TabPanel value={value} index={0} state={state}>
-	<div>
-	  Item One
-	</div>
+      <TabPanel value={value} index={0} state={state} poolAction={poolAction}>
       </TabPanel>
       <TabPanel value={value} index={1} state={state}>
-	Item Two
       </TabPanel>
       <TabPanel value={value} index={2} state={state}>
-	Item Three
       </TabPanel>
       <TabPanel value={value} index={3} state={state}>
       </TabPanel>
