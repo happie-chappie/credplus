@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 
 // We import the contract's artifacts and address here, as we are going to be
 // using them with ethers
+import DAIArtifact from "../dai.json";
 import TokenArtifact from "../contracts/token.json";
 import contractAddress from "../contracts/token-contract-address.json";
 import CTokenArtifact from "../contracts/ctoken.json";
@@ -257,6 +258,13 @@ export class Dapp extends React.Component {
   async _getPoolData() {
     const daiBalance = await this._pool.getDAIBalance();
     const ctokenBalance = await this._pool.getCTokenBalance(CTokenContractAddress.CToken);
+    const daiAddress = await this._pool.DAI_ADDRESS();
+
+    this._dai = new ethers.Contract(
+      daiAddress,
+      DAIArtifact.abi,
+      this._provider.getSigner(0)
+    );
 
     this.setState({ poolData: { daiBalance, ctokenBalance} });
   }
@@ -273,7 +281,7 @@ export class Dapp extends React.Component {
       let tx;
 
       if (type === "approveDAI") {
-	tx = await this._pool.approveDAITransfer(ethers.utils.parseUnits("1"));
+	tx = await this._dai.approve(PoolContractAddress.Pool, amount);
 	this.setState({ txBeingSent: tx.hash });
       } else if (type === "approveCToken") {
 	tx = await this._pool.approveCTokenTransfer(amount, CTokenContractAddress.CToken);
@@ -285,7 +293,7 @@ export class Dapp extends React.Component {
 	tx = await this._pool.withdraw(amount, CTokenContractAddress.CToken);
 	this.setState({ txBeingSent: tx.hash });
       } else if (type === "deposit") {
-	tx = await this._pool.deposit(ethers.utils.parseUnits("1"), CTokenContractAddress.CToken);
+	tx = await this._pool.deposit(amount, CTokenContractAddress.CToken);
 	this.setState({ txBeingSent: tx.hash });
       } else if (type === "repay") {
 	tx = await this._pool.repay(amount, CTokenContractAddress.CToken);
