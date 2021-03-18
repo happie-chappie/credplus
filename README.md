@@ -1,13 +1,53 @@
-# Hardhat Hackathon Boilerplate
+# CREDPlus
 
-This repository contains a sample project that you can use as the starting point
-for your Ethereum project. It's also a great fit for learning the basics of
-smart contract development.
+**GOAL**
 
-This project is intended to be used with the
-[Hardhat Beginners Tutorial](https://hardhat.org/tutorial), but you should be
-able to follow it by yourself by reading the README and exploring its
-`contracts`, `tests`, `scripts` and `frontend` directories.
+To understand the defi primitives by building one
+
+**How will CredPlus work**?
+
+CredPlus aims to become a 2 sided marketplace for liquidity providers (lenders) and borrowers to enable loans at fixed interest lending and borrowing. LPs will mint "CXXX" tokens for providing liquidity while borrowers deposit collateral in Eth to draw loans in respective tokens. CredPlus will be the key token for our protocol. CredPlus token holders will be able to stake CredPlus token to participate in governance of the protocol.
+
+The key aspect of CredPlus is to intelligently determine appropriate fixed interest rates for liquidity providers and borrowers through out the duration of the loan. While determining this, we will ensure that the slippage, risk is minimized and interest rates offered are competitive w.r.t the market.
+
+We will classify liquidity pools into tranches based on the following:
+
+- Time period (1 month, 3 month etc.)
+- Toke (USDC, USDT, Eth etc.)
+
+Our current interest rate strategy will be based on the following:
+
+- Current utilization of liquidity tranche on CredPlus: Modelled by CredPlus
+- Damping factor (determined by average current and expected market demand): Modelled by CredPlus
+- Base interest rate (to be determined by governance committee periodically)
+
+Example of LP interaction with CredPlus:
+
+- LP1 provides 100 USDT to 1 month USDT pool and mints C01MUSDT tokens. Assuming interest rate is 5% per month, LP will be able to redeem this for 105 USDT at maturity.
+- C01MUSDT can be used to provide liquidity/ traded in secondary markets like Uniswap. Price of C01MUSDT to be computed based on time to maturity.
+- LP1 will pay transaction costs that will be distributed to protocol stakers.
+
+Example of Borrower interaction with CredPlus:
+
+- Borrower provides Eth as collateral to draw loans against it. We offer a collateral ratio of 150%.
+- Suppose Eth price is 150 USDT, borrower will be able to draw 100 USDT. Assuming interest rate is 5% per month, borrower has to pay 105 USDT upon maturity.
+- Borrower will pay transaction costs that will be distributed to protocol stakers.
+
+**Design**
+https://whimsical.com/credplusv3-6ffjaJVt3uTFFDSx6L8HVh
+
+**Tech Stack?**
+
+- React
+- Hardhat
+- Solidity
+- Defi protocol designs
+
+**Similar Existing Ideas**
+
+Inspired by notional finance
+- https://notional.finance/
+- https://anchorprotocol.com/
 
 ## Quick start
 
@@ -15,8 +55,8 @@ The first things you need to do are cloning this repository and installing its
 dependencies:
 
 ```sh
-git clone https://github.com/nomiclabs/hardhat-hackathon-boilerplate.git
-cd hardhat-hackathon-boilerplate
+git clone https://github.com/happie-chappie/credplus
+cd credplus
 npm install
 ```
 
@@ -48,42 +88,3 @@ npm start
 Open [http://localhost:3000/](http://localhost:3000/) to see your Dapp. You will
 need to have [Metamask](https://metamask.io) installed and listening to
 `localhost 8545`.
-
-## User Guide
-
-You can find detailed instructions on using this repository and many tips in [its documentation](https://hardhat.org/tutorial).
-
-- [Project description (Token.sol)](https://hardhat.org/tutorial/4-contracts/)
-- [Setting up the environment](https://hardhat.org/tutorial/1-setup/)
-- [Testing with Hardhat, Mocha and Waffle](https://hardhat.org/tutorial/5-test/)
-- [Setting up Metamask](https://hardhat.org/tutorial/8-frontend/#setting-up-metamask)
-- [Hardhat's full documentation](https://hardhat.org/getting-started/)
-
-For a complete introduction to Hardhat, refer to [this guide](https://hardhat.org/getting-started/#overview).
-
-## What’s Included?
-
-Your environment will have everything you need to build a Dapp powered by Hardhat and React.
-
-- [Hardhat](https://hardhat.org/): An Ethereum development task runner and testing network.
-- [Mocha](https://mochajs.org/): A JavaScript test runner.
-- [Chai](https://www.chaijs.com/): A JavaScript assertion library.
-- [ethers.js](https://docs.ethers.io/ethers.js/html/): A JavaScript library for interacting with Ethereum.
-- [Waffle](https://github.com/EthWorks/Waffle/): To have Ethereum-specific Chai assertions/mathers.
-- [A sample frontend/Dapp](./frontend): A Dapp which uses [Create React App](https://github.com/facebook/create-react-app).
-
-## Troubleshooting
-
-- `Invalid nonce` errors: if you are seeing this error on the `npx hardhat node`
-  console, try resetting your Metamask account. This will reset the account's
-  transaction history and also the nonce. Open Metamask, click on your account
-  followed by `Settings > Advanced > Reset Account`.
-
-## Feedback, help and news
-
-We'd love to have your feedback on this tutorial. Feel free to reach us through
-this repository or [our Discord server](https://invite.gg/HardhatSupport).
-
-Also you can [follow us on Twitter](https://twitter.com/HardhatHQ).
-
-**Happy _buidling_!**
