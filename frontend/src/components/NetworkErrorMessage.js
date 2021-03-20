@@ -22,12 +22,13 @@ export function NetworkErrorMessage({ message, dismiss }) {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
       <Alert severity="error">{message}</Alert>
-    </div>
   )
 }
 /*
+    <div className={classes.root}>
+      <Alert severity="error">{message}</Alert>
+    </div>
     <div className="alert alert-danger" role="alert">
       {message}
       <button

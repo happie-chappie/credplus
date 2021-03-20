@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import Alert from '@material-ui/lab/Alert';
 // import IconButton from '@material-ui/core/IconButton';
 // import Toolbar from '@material-ui/core/Toolbar';
 // import MenuIcon from '@material-ui/icons/Menu';
@@ -15,6 +16,7 @@ import WalletDetails from "./WalletDetails";
 import Borrow from "./Borrow";
 import Lend from "./Lend";
 import All from "./All";
+import Pool from "./Pool";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +43,7 @@ function TabPanel(props) {
 	aria-labelledby={`simple-tab-${index}`}
 	{...other}
       >
-	<All state={state} poolAction={poolAction} />
+	<Pool state={state} poolAction={poolAction} />
       </div>
     );
   }
@@ -124,10 +126,9 @@ export default function ButtonAppBar({
     <div className={classes.root}>
       <AppBar position="static" style={{display: "flex", fontSize: 48, flexDirection: "row", height: 80, justifyContent: "space-between" }}>
 	<Tabs value={value} onChange={handleChange} aria-label="simple tabs example" style={{fontSize: 48, height: 80}} >
-	  <Tab label="Pool" {...a11yProps(0)} style={{height: 80}} />
+	  <Tab label="Pool & Wallet" {...a11yProps(0)} style={{height: 80}} />
 	  <Tab label="Borrow" {...a11yProps(1)} />
 	  <Tab label="Lend" {...a11yProps(2)} />
-	  <Tab label="Wallet" {...a11yProps(3)} />
 	</Tabs>
 	<Button
 	  // variant="contained"
@@ -136,13 +137,12 @@ export default function ButtonAppBar({
 	  onClick={connectWallet}
 	>Connect Wallet</Button>
       </AppBar>
+      {!state.walletData && (<Alert severity="error">Wallet is not connected — Please connect it!</Alert>)}
       <TabPanel value={value} index={0} state={state} poolAction={poolAction}>
       </TabPanel>
-      <TabPanel value={value} index={1} state={state}>
+      <TabPanel value={value} index={1} state={state} poolAction={poolAction}>
       </TabPanel>
-      <TabPanel value={value} index={2} state={state}>
-      </TabPanel>
-      <TabPanel value={value} index={3} state={state}>
+      <TabPanel value={value} index={2} state={state} poolAction={poolAction}>
       </TabPanel>
     </div>
   );

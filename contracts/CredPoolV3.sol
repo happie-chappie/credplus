@@ -47,8 +47,8 @@ contract CredPoolV3 {
 	}
 
 	function deposit(uint amount, address _ctoken) external {
-		console.log(amount);
-		console.log(dai.balanceOf(msg.sender));
+		// console.log(amount);
+		// console.log(dai.balanceOf(msg.sender));
 		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
 		ICToken(_ctoken).transfer(msg.sender, amount);

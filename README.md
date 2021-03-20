@@ -67,10 +67,20 @@ npx hardhat node
 ```
 
 Then, on a new terminal, go to the repository's root folder and run this to
-deploy your contract:
+deploy credplus contracts:
 
 ```sh
 npx hardhat run scripts/deploy.js --network localhost
+```
+
+Expected Output
+```sh
+Deploying the contracts with the account: 0x564286362092D8e7936f0549571a803B203aAceD
+Account balance: 8599509219465794471219
+DAI balance: 1044436250836495272775783
+CredPoolV3 address: 0x028028E2a66398C59C78e499d457C2289EDD37A9
+CToken address: 0x3Aa5ebB10DC797CAC828524e59A333d0A371443c
+Token address: 0xc6e7DF5E7b4f2A278906862b61205850344D4e7d
 ```
 
 Finally, we can run the frontend with:
@@ -88,3 +98,18 @@ npm start
 Open [http://localhost:3000/](http://localhost:3000/) to see your Dapp. You will
 need to have [Metamask](https://metamask.io) installed and listening to
 `localhost 8545`.
+
+### TODOs
+
+#### UI/UX
+##### Features
+- [ ] Add white paper
+- [ ] Add presentation
+##### Cosmetics
+- [ ] Streamline errors
+
+#### Smart Contracts
+
+
+
+#### CICD

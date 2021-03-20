@@ -106,13 +106,6 @@ export class Dapp extends React.Component {
     // If everything is loaded, we render the application.
     return (
       <Container maxWidth="lg">
-	<AppBar
-	  state={this.state}
-          connectWallet={() => this._connectWallet()} 
-          networkError={this.state.networkError}
-          dismiss={() => this._dismissNetworkError()}
-	  poolAction={(type, amount) => this._poolAction(type, amount)}
-	/>
 	{this.state.networkError && (
 	  <NetworkErrorMessage 
 	    message={this.state.networkError} 
@@ -128,6 +121,13 @@ export class Dapp extends React.Component {
 	    dismiss={() => this._dismissTransactionError()}
 	  />
 	)}
+	<AppBar
+	  state={this.state}
+          connectWallet={() => this._connectWallet()} 
+          networkError={this.state.networkError}
+          dismiss={() => this._dismissNetworkError()}
+	  poolAction={(type, amount) => this._poolAction(type, amount)}
+	/>
     </Container>
     );
   }
