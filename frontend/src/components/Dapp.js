@@ -65,6 +65,7 @@ export class Dapp extends React.Component {
       networkError: undefined,
       poolData: undefined,
       walletData: undefined,
+      transactionsData: undefined,
     };
 
     this.state = this.initialState;
@@ -193,6 +194,7 @@ export class Dapp extends React.Component {
     this._intializeEthers();
     this._getTokenData();
     this._getPoolData();
+    this._getTransactionsData();
     this._getWalletData();
     this._startPollingData();
   }
@@ -250,14 +252,21 @@ export class Dapp extends React.Component {
 
   async _getWalletData() {
     const daiBalance = await this._pool.getUserDAIBalance();
-    const ctokenBalance = await this._pool.getUserCTokenBalance(CTokenContractAddress.CToken);
+    const ctokenBalance = await this._pool.getUserCredTokenBalance(CTokenContractAddress.CToken);
 
     this.setState({ walletData: { daiBalance, ctokenBalance } });
   }
 
+  async _getTransactionsData() {
+    const balanceTransactions = await this._pool.getUserBorrowTransactions();
+    const depositTransactions = await this._pool.getUserDepositTransactions();
+
+    this.setState({ transactionsData: { balanceTransactions, depositTransactions } });
+  }
+
   async _getPoolData() {
     const daiBalance = await this._pool.getDAIBalance();
-    const ctokenBalance = await this._pool.getCTokenBalance(CTokenContractAddress.CToken);
+    const ctokenBalance = await this._pool.getCredTokenBalance(CTokenContractAddress.CToken);
     const daiAddress = await this._pool.DAI_ADDRESS();
 
     this._dai = new ethers.Contract(
@@ -309,6 +318,7 @@ export class Dapp extends React.Component {
       }
 
       await this._getPoolData();
+      await this._getTransactionsData();
       await this._getWalletData();
     } catch (error) {
       if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {

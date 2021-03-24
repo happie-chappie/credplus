@@ -115,6 +115,19 @@ describe("CredPoolV4 contract", function () {
 
     it("Should record this transaction in borrowTransactionMap", async function () {
       const transactions = await hardhatCredPoolV4.connect(borrower).getUserBorrowTransactions();
+      console.log("==========");
+      console.log(transactions);
+      // console.log(typeof(transactions[0]));
+      // console.log(transactions[0]);
+      // console.log(transactions[0].length);
+      // console.log(transactions[0][0].toNumber());
+      // console.log(transactions[0][0].toString());
+      // console.log(transactions[0][1]);
+      // console.log(transactions[0][2]);
+      // console.log(transactions[0][3]);
+      // console.log(transactions[0].id.toNumber());
+      // console.log(transactions[0].amount.toNumber());
+      // console.log(transactions[0].borrowedTime);
       expect(transactions.length).to.equal(1);
     });
 
@@ -149,6 +162,8 @@ describe("CredPoolV4 contract", function () {
 
     it("Should record this transaction in depositTransactionMap", async function () {
       const transactions = await hardhatCredPoolV4.connect(lender).getUserDepositTransactions();
+      console.log("==========");
+      console.log(transactions);
       expect(transactions.length).to.equal(1);
     });
 

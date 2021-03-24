@@ -27,12 +27,14 @@ contract CredPoolV4 {
 	IERC20 public dai; 
 
 	struct BorrowTransaction {
+		uint id;
 		uint amount;
 		uint borrowedTime;
 		uint repayedTime;
 	}
 
 	struct DepositTransaction {
+		uint id;
 		uint amount;
 		uint depositedTime;
 		uint withdrewTime;
@@ -78,6 +80,7 @@ contract CredPoolV4 {
 			depositTransactionCount = DepositTransactionCountMap[msg.sender] + 1;
 		}
 		DepositTransaction memory depositTransaction = DepositTransaction(
+			depositTransactionCount,
 			amount,
 			block.timestamp,
 			0
@@ -107,6 +110,7 @@ contract CredPoolV4 {
 			borrowTransactionCount = BorrowTransactionCountMap[msg.sender] + 1;
 		}
 		BorrowTransaction memory borrowTransaction = BorrowTransaction(
+			borrowTransactionCount,
 			amount,
 			block.timestamp,
 			0
@@ -158,7 +162,7 @@ contract CredPoolV4 {
 		BorrowTransaction[] memory transactions =  new BorrowTransaction[](borrowTransactionCount);
 
 		for(uint i=0; i<borrowTransactionCount; i++) {
-			transactions[i] = BorrowTransactionsMap[msg.sender][i];
+			transactions[i] = BorrowTransactionsMap[msg.sender][i+1];
 		}
 
 		return transactions;
@@ -174,7 +178,7 @@ contract CredPoolV4 {
 		DepositTransaction[] memory transactions =  new DepositTransaction[](depositTransactionCount);
 
 		for(uint i=0; i<depositTransactionCount; i++) {
-			transactions[i] = DepositTransactionsMap[msg.sender][i];
+			transactions[i] = DepositTransactionsMap[msg.sender][i+1];
 		}
 
 		return transactions;

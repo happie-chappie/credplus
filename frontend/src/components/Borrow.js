@@ -49,6 +49,36 @@ export default function Variants({state, poolAction}) {
     poolAction("borrow", inputRef.current.value);
     // inputRef.current.value = null;
   }
+  // console.log("=========");
+  let transactions = [];
+  if(state.transactionsData) {
+    transactions = state.transactionsData.balanceTransactions;
+  }
+
+  const renderTableBody = () => {
+    /*
+    transactions.forEach(tx => {
+      console.log("=========");
+      console.log(tx.length);
+      console.log(tx.amount.toString());
+      console.log(tx[0]);
+      console.log(tx[1]);
+      console.log(tx[2]);
+    })
+    */
+
+    const rows = transactions.map(transaction => (
+      <TableRow key={transaction.borrowedTime}>
+	<TableCell component="th" scope="row">
+	  {transaction.id.toString()}
+	</TableCell>
+	<TableCell align="right">{transaction.amount.toString()}</TableCell>
+	<TableCell align="right">{transaction.borrowedTime.toString()}</TableCell>
+      </TableRow>
+    ))
+
+    return <TableBody>{rows}</TableBody>;
+  }
 
   return (
     <div className={classes.root}>
@@ -85,20 +115,14 @@ export default function Variants({state, poolAction}) {
 	    <TableHead>
 	      <TableRow>
 		<TableCell align="left">ID</TableCell>
-		<TableCell align="left">Borrowed DAI</TableCell>
-		<TableCell align="left">Time</TableCell>
-		<TableCell align="right">Repay</TableCell>
+		<TableCell align="right">Borrowed DAI</TableCell>
+		<TableCell align="right">Borrowed Time</TableCell>
+		<TableCell align="right">Repayed Time</TableCell>
+		<TableCell align="right"></TableCell>
 	      </TableRow>
 	    </TableHead>
-	    {state.tokenData && state.poolData && state.walletData && (
-	    <TableBody>
-	      <TableRow key="1">
-		<TableCell component="th" scope="row">
-		  DAI
-		</TableCell>
-		<TableCell align="right">{state.walletData.daiBalance.toString()}</TableCell>
-	      </TableRow>
-	    </TableBody>)}
+	    {state.tokenData && state.poolData && state.walletData && state.transactionsData && (
+	      <>{renderTableBody()}</>)}
 	  </Table>
 	</TableContainer>
       </Paper>

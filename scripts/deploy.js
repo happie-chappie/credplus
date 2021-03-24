@@ -58,26 +58,26 @@ async function main() {
   console.log("DAI balance:", (daiBalance));
   await DAI.approve(credPoolAddress, INITIAL_DAI);
 
-  const CredPoolV3 = await ethers.getContractFactory("CredPoolV3", deployer);
-  const credPoolV3 = await CredPoolV3.deploy(DAI_ADDRESS);
-  await credPoolV3.deployed();
+  const CredPoolV4 = await ethers.getContractFactory("CredPoolV4", deployer);
+  const credPoolV4 = await CredPoolV4.deploy(DAI_ADDRESS);
+  await credPoolV4.deployed();
 
-  const CToken = await ethers.getContractFactory("CToken");
-  const ctoken = await CToken.deploy(credPoolV3.address);
-  await ctoken.deployed();
+  const CTokenV2 = await ethers.getContractFactory("CTokenV2");
+  const ctokenV2 = await CTokenV2.deploy(credPoolV4.address);
+  await ctokenV2.deployed();
 
   const Token = await ethers.getContractFactory("Token");
   const token = await Token.deploy();
   await token.deployed();
 
-  console.log("CredPoolV3 address:", credPoolV3.address);
-  console.log("CToken address:", ctoken.address);
+  console.log("CredPoolV4 address:", credPoolV4.address);
+  console.log("CTokenV2 address:", ctokenV2.address);
   console.log("Token address:", token.address);
 
   // We also save the contract's artifacts and address in the frontend directory
   saveFrontendFiles(token, 'Token', 'Token');
-  saveFrontendFiles(credPoolV3, 'Pool', 'CredPoolV3');
-  saveFrontendFiles(ctoken, 'CToken', 'CToken');
+  saveFrontendFiles(credPoolV4, 'Pool', 'CredPoolV4');
+  saveFrontendFiles(ctokenV2, 'CTokenV2', 'CTokenV2');
 }
 
 function saveFrontendFiles(token, slug, ContractName) {

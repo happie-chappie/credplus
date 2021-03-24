@@ -120,7 +120,7 @@ export default function ButtonAppBar({
   };
 
   // console.log("=========");
-  // console.log(state);
+  // console.log(state.transactionsData);
 
   return (
     <div className={classes.root}>
