@@ -26,8 +26,17 @@ contract CredPoolV4 {
 	ICToken public CToken;
 	IERC20 public dai; 
 
-    // An address type variable is used to store ethereum accounts.
+	struct BorrowTransaction {
+		uint amount;
+		uint borrowedTime;
+		uint repayeddTime;
+	}
+
+    // An address type variable is used to store owner account address
     address public owner;
+	mapping(address => bool) IsNotFirstBorrowTransaction;
+	mapping(address => uint) BorrowTransactionCountMap;
+	mapping(address => mapping(uint => BorrowTransaction)) BorrowTransactionsMap;
 
 	constructor(address _dai_address) {
 		DAI_ADDRESS = _dai_address;
@@ -62,6 +71,23 @@ contract CredPoolV4 {
 	function borrow(uint amount, address _ctoken) external {
 		dai.transferFrom(address(this), msg.sender, amount);
 		ICToken(_ctoken).mint(address(this), amount);
+		uint borrowTransactionCount;
+		if (!IsNotFirstBorrowTransaction[msg.sender]) {
+			borrowTransactionCount = 1;
+			IsNotFirstBorrowTransaction[msg.sender] = true;
+		} else {
+			borrowTransactionCount = BorrowTransactionCountMap[msg.sender] + 1;
+		}
+		BorrowTransaction memory borrowTransaction = BorrowTransaction(
+			amount,
+			block.timestamp,
+			0
+		);
+		// if (!borrowTransactionCount) {
+		// borrowTransactionCount = 1;
+		// }
+		BorrowTransactionsMap[msg.sender][borrowTransactionCount] = borrowTransaction;
+		BorrowTransactionCountMap[msg.sender] = borrowTransactionCount;
 	}
 
 	function repay(uint amount, address _ctoken) external {
@@ -80,6 +106,7 @@ contract CredPoolV4 {
 		return balance;
 	}
 
+	/******** user balances ********/
 	function getUserDAIBalance() external view returns (uint) {
 		uint balance = dai.balanceOf(msg.sender);
 		return balance;
@@ -88,6 +115,28 @@ contract CredPoolV4 {
 	function getUserCredTokenBalance(address _ctoken) external view returns (uint) {
 		uint balance = ICToken(_ctoken).balanceOf(msg.sender);
 		return balance;
+	}
+
+	/******** user transactions ********/
+	function getUserBorrowTransactions() external view returns (BorrowTransaction [] memory) {
+		// uint balance = dai.balanceOf(msg.sender);
+		// return BorrowTransactionsMap[msg.sender];
+		uint borrowTransactionCount;
+		// return 1;
+		if (!IsNotFirstBorrowTransaction[msg.sender]) {
+			borrowTransactionCount = 0;
+			// IsNotFirstBorrowTransaction[msg.sender] = true;
+		} else {
+			borrowTransactionCount = BorrowTransactionCountMap[msg.sender];
+		}
+		BorrowTransaction[] memory transactions =  new BorrowTransaction[](borrowTransactionCount);
+
+		for(uint i=0; i<borrowTransactionCount; i++) {
+			transactions[i] = BorrowTransactionsMap[msg.sender][i];
+		}
+
+		// return transactions[0:borrowTransactionCount-1];
+		return transactions;
 	}
 }
 

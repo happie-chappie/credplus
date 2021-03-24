@@ -113,6 +113,13 @@ describe("CredPoolV4 contract", function () {
       await hardhatCredPoolV4.connect(borrower).borrow(BORROWING_DAI, hardhatCTokenV2.address);
     });
 
+    it("Should record this transaction in borrowTransactionMap", async function () {
+      // check the reserve DAI balance of the pool
+      // expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI - BORROWING_DAI);
+      // expect(await hardhatCredPoolV4.connect(borrower).getUserDAIBalance()).to.equal(BORROWING_DAI);
+      console.log(await hardhatCredPoolV4.connect(borrower).getUserBorrowTransactions());
+    });
+
     it("Should decrease the reserve DAI pool size by 1k", async function () {
       // check the reserve DAI balance of the pool
       expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI - BORROWING_DAI);
