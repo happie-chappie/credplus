@@ -12,6 +12,7 @@ Borrowers
 Depositors
 	- Deposit
 	- Withdraw
+Bunch of views for user specific data
 There is no interest rate
 */
 contract CredPoolV3 {

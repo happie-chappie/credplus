@@ -41,7 +41,7 @@ contract CredPoolV4 {
 		return true;
 	}
 
-	function approveCTokenTransfer(uint amount, address _ctoken) external returns (bool) {
+	function approveCredTokenTransfer(uint amount, address _ctoken) external returns (bool) {
 		ICToken(_ctoken).approve(address(this), amount);
 		return true;
 	}
@@ -75,7 +75,7 @@ contract CredPoolV4 {
 		return balance;
 	}
 
-	function getCTokenBalance(address _ctoken) external view returns (uint) {
+	function getCredTokenBalance(address _ctoken) external view returns (uint) {
 		uint balance = ICToken(_ctoken).balanceOf(address(this));
 		return balance;
 	}
@@ -85,7 +85,7 @@ contract CredPoolV4 {
 		return balance;
 	}
 
-	function getUserCTokenBalance(address _ctoken) external view returns (uint) {
+	function getUserCredTokenBalance(address _ctoken) external view returns (uint) {
 		uint balance = ICToken(_ctoken).balanceOf(msg.sender);
 		return balance;
 	}

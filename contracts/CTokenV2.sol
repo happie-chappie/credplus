@@ -5,10 +5,10 @@ import "./dependencies/ERC20.sol";
 
 // TODO: have to adhere to ICToken
 contract CTokenV2 is ERC20 {
-	uint public INITIAL_SUPPLY = 300000;
+	uint public INITIAL_SUPPLY = 330000;
 	address public POOL_ADDRESS;
 
-	constructor(address _pool_address) ERC20("CToken", "CT") {
+	constructor(address _pool_address) ERC20("CTokenV2", "CT") {
 		POOL_ADDRESS = _pool_address;
 	  	_mint(POOL_ADDRESS, INITIAL_SUPPLY);
 	}
