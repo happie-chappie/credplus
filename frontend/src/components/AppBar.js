@@ -43,7 +43,7 @@ function TabPanel(props) {
 	aria-labelledby={`simple-tab-${index}`}
 	{...other}
       >
-	<Pool state={state} poolAction={poolAction} />
+	<Borrow state={state} poolAction={poolAction}/>
       </div>
     );
   }

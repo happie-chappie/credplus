@@ -101,6 +101,9 @@ need to have [Metamask](https://metamask.io) installed and listening to
 
 ### TODOs
 
+#### Priorities
+- [ ] Streamline the number formating
+
 #### UI/UX
 ##### Features
 - [ ] Add white paper
@@ -109,7 +112,9 @@ need to have [Metamask](https://metamask.io) installed and listening to
 - [ ] Streamline errors
 
 #### Smart Contracts
-
+- [ ] Use ERC1155
+- [ ] Better integration beteween pool and lp tokens of the pool
+- [ ] workflows to intiate new pools
 
 
 #### CICD
