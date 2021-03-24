@@ -114,10 +114,8 @@ describe("CredPoolV4 contract", function () {
     });
 
     it("Should record this transaction in borrowTransactionMap", async function () {
-      // check the reserve DAI balance of the pool
-      // expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI - BORROWING_DAI);
-      // expect(await hardhatCredPoolV4.connect(borrower).getUserDAIBalance()).to.equal(BORROWING_DAI);
-      console.log(await hardhatCredPoolV4.connect(borrower).getUserBorrowTransactions());
+      const transactions = await hardhatCredPoolV4.connect(borrower).getUserBorrowTransactions();
+      expect(transactions.length).to.equal(1);
     });
 
     it("Should decrease the reserve DAI pool size by 1k", async function () {
@@ -149,6 +147,11 @@ describe("CredPoolV4 contract", function () {
       await hardhatCredPoolV4.connect(lender).deposit(LENDING_DAI, hardhatCTokenV2.address);
     });
 
+    it("Should record this transaction in depositTransactionMap", async function () {
+      const transactions = await hardhatCredPoolV4.connect(lender).getUserDepositTransactions();
+      expect(transactions.length).to.equal(1);
+    });
+
     it("Lender should have zero DAI balance", async function (){
       expect(await DAI.balanceOf(lender.address)).to.equal(0);
     });
@@ -173,7 +176,8 @@ describe("CredPoolV4 contract", function () {
       // we approve the CredPoolV2 to move DAI funds from borrower
       await DAI.connect(borrower).approve(credPoolAddress, BORROWING_DAI);
       await hardhatCredPoolV4.connect(borrower).approveDAITransfer(LENDING_DAI);
-      await hardhatCredPoolV4.connect(borrower).repay(BORROWING_DAI, hardhatCTokenV2.address);
+      // TODO: have to streamline the transaction_id workflow in the tests
+      await hardhatCredPoolV4.connect(borrower).repay(1, hardhatCTokenV2.address);
     });
 
     it("Should increase the reserve DAI pool size by 1k", async function () {
@@ -196,7 +200,8 @@ describe("CredPoolV4 contract", function () {
       // approve CTokenV2 spend to the creditPool
       await hardhatCTokenV2.connect(lender).approve(credPoolAddress, INITIAL_DAI);
       await hardhatCredPoolV4.connect(lender).approveCredTokenTransfer(LENDING_DAI, hardhatCTokenV2.address);
-      await hardhatCredPoolV4.connect(lender).withdraw(LENDING_DAI, hardhatCTokenV2.address);
+      // TODO: have to streamline the transaction_id workflow in the tests
+      await hardhatCredPoolV4.connect(lender).withdraw(1, hardhatCTokenV2.address);
     });
 
     it("Lender should have 1k DAI balance", async function (){

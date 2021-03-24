@@ -29,14 +29,25 @@ contract CredPoolV4 {
 	struct BorrowTransaction {
 		uint amount;
 		uint borrowedTime;
-		uint repayeddTime;
+		uint repayedTime;
+	}
+
+	struct DepositTransaction {
+		uint amount;
+		uint depositedTime;
+		uint withdrewTime;
 	}
 
     // An address type variable is used to store owner account address
     address public owner;
+	// TODO: need to rename the IsNotFirstBorrowTransaction and
+	// rework on the workflow to track the first transaction of the user
 	mapping(address => bool) IsNotFirstBorrowTransaction;
 	mapping(address => uint) BorrowTransactionCountMap;
 	mapping(address => mapping(uint => BorrowTransaction)) BorrowTransactionsMap;
+	mapping(address => bool) IsNotFirstDepositTransaction;
+	mapping(address => uint) DepositTransactionCountMap;
+	mapping(address => mapping(uint => DepositTransaction)) DepositTransactionsMap;
 
 	constructor(address _dai_address) {
 		DAI_ADDRESS = _dai_address;
@@ -56,16 +67,33 @@ contract CredPoolV4 {
 	}
 
 	function deposit(uint amount, address _ctoken) external {
-		// console.log(amount);
-		// console.log(dai.balanceOf(msg.sender));
 		dai.approve(address(this), amount);
 		dai.transferFrom(msg.sender, address(this), amount);
 		ICToken(_ctoken).transfer(msg.sender, amount);
+		uint depositTransactionCount;
+		if (!IsNotFirstDepositTransaction[msg.sender]) {
+			depositTransactionCount = 1;
+			IsNotFirstDepositTransaction[msg.sender] = true;
+		} else {
+			depositTransactionCount = DepositTransactionCountMap[msg.sender] + 1;
+		}
+		DepositTransaction memory depositTransaction = DepositTransaction(
+			amount,
+			block.timestamp,
+			0
+		);
+		DepositTransactionsMap[msg.sender][depositTransactionCount] = depositTransaction;
+		DepositTransactionCountMap[msg.sender] = depositTransactionCount;
 	}
 
-	function withdraw(uint amount, address _ctoken) external {
-		dai.transferFrom(address(this), msg.sender, amount);
-		ICToken(_ctoken).transferFrom(msg.sender, address(this), amount);
+	function withdraw(uint transaction_id, address _ctoken) external {
+		// fetching the transaction
+		DepositTransaction memory transaction = DepositTransactionsMap[msg.sender][transaction_id];
+		// updating the transaction
+		transaction.withdrewTime = block.timestamp;
+		DepositTransactionsMap[msg.sender][transaction_id] = transaction;
+		dai.transferFrom(address(this), msg.sender, transaction.amount);
+		ICToken(_ctoken).transferFrom(msg.sender, address(this), transaction.amount);
 	}
 
 	function borrow(uint amount, address _ctoken) external {
@@ -83,16 +111,18 @@ contract CredPoolV4 {
 			block.timestamp,
 			0
 		);
-		// if (!borrowTransactionCount) {
-		// borrowTransactionCount = 1;
-		// }
 		BorrowTransactionsMap[msg.sender][borrowTransactionCount] = borrowTransaction;
 		BorrowTransactionCountMap[msg.sender] = borrowTransactionCount;
 	}
 
-	function repay(uint amount, address _ctoken) external {
-		dai.transferFrom(msg.sender, address(this), amount);
-		ICToken(_ctoken).burn(address(this), amount);
+	function repay(uint transaction_id, address _ctoken) external {
+		// fetching the transaction
+		BorrowTransaction memory transaction = BorrowTransactionsMap[msg.sender][transaction_id];
+		// updating the transaction
+		transaction.repayedTime = block.timestamp;
+		BorrowTransactionsMap[msg.sender][transaction_id] = transaction;
+		dai.transferFrom(msg.sender, address(this), transaction.amount);
+		ICToken(_ctoken).burn(address(this), transaction.amount);
 	}
 
 	/******* VIEWS ********/
@@ -119,13 +149,9 @@ contract CredPoolV4 {
 
 	/******** user transactions ********/
 	function getUserBorrowTransactions() external view returns (BorrowTransaction [] memory) {
-		// uint balance = dai.balanceOf(msg.sender);
-		// return BorrowTransactionsMap[msg.sender];
 		uint borrowTransactionCount;
-		// return 1;
 		if (!IsNotFirstBorrowTransaction[msg.sender]) {
 			borrowTransactionCount = 0;
-			// IsNotFirstBorrowTransaction[msg.sender] = true;
 		} else {
 			borrowTransactionCount = BorrowTransactionCountMap[msg.sender];
 		}
@@ -135,7 +161,22 @@ contract CredPoolV4 {
 			transactions[i] = BorrowTransactionsMap[msg.sender][i];
 		}
 
-		// return transactions[0:borrowTransactionCount-1];
+		return transactions;
+	}
+
+	function getUserDepositTransactions() external view returns (DepositTransaction [] memory) {
+		uint depositTransactionCount;
+		if (!IsNotFirstDepositTransaction[msg.sender]) {
+			depositTransactionCount = 0;
+		} else {
+			depositTransactionCount = DepositTransactionCountMap[msg.sender];
+		}
+		DepositTransaction[] memory transactions =  new DepositTransaction[](depositTransactionCount);
+
+		for(uint i=0; i<depositTransactionCount; i++) {
+			transactions[i] = DepositTransactionsMap[msg.sender][i];
+		}
+
 		return transactions;
 	}
 }
