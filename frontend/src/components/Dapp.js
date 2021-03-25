@@ -293,7 +293,7 @@ export class Dapp extends React.Component {
 	tx = await this._dai.approve(PoolContractAddress.Pool, amount);
 	this.setState({ txBeingSent: tx.hash });
       } else if (type === "approveCToken") {
-	tx = await this._pool.approveCTokenTransfer(amount, CTokenContractAddress.CToken);
+	tx = await this._ctoken.approve(PoolContractAddress.Pool, amount);
 	this.setState({ txBeingSent: tx.hash });
       } else if (type === "borrow") {
 	tx = await this._pool.borrow(amount, CTokenContractAddress.CToken);

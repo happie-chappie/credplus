@@ -43,7 +43,7 @@ function TabPanel(props) {
 	aria-labelledby={`simple-tab-${index}`}
 	{...other}
       >
-	<Borrow state={state} poolAction={poolAction}/>
+	<Pool state={state} poolAction={poolAction}/>
       </div>
     );
   }
@@ -57,7 +57,7 @@ function TabPanel(props) {
 	aria-labelledby={`simple-tab-${index}`}
 	{...other}
       >
-	<Borrow state={state}/>
+	<Borrow state={state} poolAction={poolAction}/>
       </div>
     );
   }
@@ -71,7 +71,7 @@ function TabPanel(props) {
 	aria-labelledby={`simple-tab-${index}`}
 	{...other}
       >
-	<Lend state={state}/>
+	<Lend state={state} poolAction={poolAction}/>
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function ButtonAppBar({
 	<Tabs value={value} onChange={handleChange} aria-label="simple tabs example" style={{fontSize: 48, height: 80}} >
 	  <Tab label="Pool & Wallet" {...a11yProps(0)} style={{height: 80}} />
 	  <Tab label="Borrow" {...a11yProps(1)} />
-	  <Tab label="Lend" {...a11yProps(2)} />
+	  <Tab label="Deposit" {...a11yProps(2)} />
 	</Tabs>
 	<Button
 	  // variant="contained"

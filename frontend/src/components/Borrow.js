@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     // alignItems: 'center',
   },
   paper: {
-    width: 600,
+    width: 800,
     // height: 700,
     display: 'flex',
     justifyContent: 'center',
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   table: {
-    maxWidth: 600,
+    maxWidth: 800,
     // height: 200,
   },
 }));
@@ -59,11 +59,7 @@ export default function Variants({state, poolAction}) {
     /*
     transactions.forEach(tx => {
       console.log("=========");
-      console.log(tx.length);
-      console.log(tx.amount.toString());
-      console.log(tx[0]);
-      console.log(tx[1]);
-      console.log(tx[2]);
+      console.log(tx.borrowedTime.toNumber());
     })
     */
 
@@ -73,7 +69,29 @@ export default function Variants({state, poolAction}) {
 	  {transaction.id.toString()}
 	</TableCell>
 	<TableCell align="right">{transaction.amount.toString()}</TableCell>
-	<TableCell align="right">{transaction.borrowedTime.toString()}</TableCell>
+	<TableCell align="right">{new Date(transaction.borrowedTime.toNumber()*1000).toLocaleDateString("en-US")}</TableCell>
+	{(transaction.repayedTime != 0) ?
+	  (<TableCell align="right">{new Date(transaction.repayedTime.toNumber()*1000).toLocaleDateString("en-US")}</TableCell>) :
+	    (<TableCell align="right">-</TableCell>)
+	  }
+	<TableCell align="right">
+	  <ButtonGroup color="primary" aria-label="outlined primary button group">
+	    <Button
+	      variant="outlined"
+	      color="primary"
+	      onClick={() => poolAction('approveDAI', transaction.amount.toString())}
+	    >
+	      Approve
+	    </Button>
+	    <Button
+	      variant="outlined"
+	      color="primary"
+	      onClick={() => poolAction('repay', transaction.id.toString())}
+	    >
+	      Repay
+	    </Button>
+	  </ButtonGroup>
+	</TableCell>
       </TableRow>
     ))
 
@@ -90,26 +108,27 @@ export default function Variants({state, poolAction}) {
 	<Typography variant="h4"> BORROW  </Typography>
 	<Divider />
 	<div style={{height: 20}} />
-	    {state.tokenData && state.poolData && state.walletData && (
-	      <Box display="flex" flexDirection="column">
-		<TextField
-		  id="outlined-basic"
-		  label="To Borrow"
-		  variant="outlined"
-		  type="number"
-		  inputRef={inputRef}
-		/>
-		<div style={{height: 20}} />
-		<Box display="flex" justifyContent="center">
-		  <ButtonGroup color="primary" aria-label="outlined primary button group">
-		    <Button onClick={handleBorrow}>Borrow</Button>
-		  </ButtonGroup>
-		</Box>
-	      </Box>
-	    )}
+	{state.tokenData && state.poolData && state.walletData && (
+	  <Box display="flex" flexDirection="column">
+	    <TextField
+	      id="outlined-basic"
+	      label="To Borrow"
+	      variant="outlined"
+	      type="number"
+	      inputRef={inputRef}
+	    />
+	    <div style={{height: 20}} />
+	    <Box display="flex" justifyContent="center">
+	      <ButtonGroup color="primary" aria-label="outlined primary button group">
+		<Button onClick={handleBorrow}>Borrow</Button>
+	      </ButtonGroup>
+	    </Box>
+	  </Box>
+	)}
 	<div style={{height: 60}} />
-	<Typography variant="h4"> Previous Borrow Transactions </Typography>
+	<Typography variant="h4"> Previous Transactions </Typography>
 	<Divider />
+	<div style={{height: 20}} />
 	<TableContainer component={Paper}>
 	  <Table className={classes.table} aria-label="simple table">
 	    <TableHead>
