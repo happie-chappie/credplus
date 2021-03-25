@@ -14,9 +14,9 @@ Depositors
 	- Withdraw
 Bunch of views for user specific data
 Tracking borrow and deposit transactions
-There is no interest rate
+Add interest rate
 */
-contract CredPoolV4 {
+contract CredPoolV5 {
 	// fixed interest rate
 	uint INITIAL_DAI = 300000;
 	uint interestRate = 10;

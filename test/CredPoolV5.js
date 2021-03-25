@@ -1,10 +1,10 @@
 const { expect } = require("chai");
 
-describe("CredPoolV4 contract", function () {
-  let CredPoolV4;
-  let hardhatCredPoolV4;
-  let CTokenV2;
-  let hardhatCTokenV2;
+describe("CredPoolV5 contract", function () {
+  let CredPoolV5;
+  let hardhatCredPoolV5;
+  let CTokenV3;
+  let hardhatCTokenV3;
   let DAI;
   let billionaireSigner;
   let credPoolAddress;
@@ -36,8 +36,8 @@ describe("CredPoolV4 contract", function () {
 
     billionaireSigner = await ethers.provider.getSigner(BILLIONAIRE_ADDRESS);
     DAI = await ethers.getContractAt("IERC20", DAI_ADDRESS, billionaireSigner);
-    CredPoolV4 = await ethers.getContractFactory("CredPoolV4", billionaireSigner);
-    CTokenV2 = await ethers.getContractFactory("CTokenV2", billionaireSigner);
+    CredPoolV5 = await ethers.getContractFactory("CredPoolV5", billionaireSigner);
+    CTokenV3 = await ethers.getContractFactory("CTokenV3", billionaireSigner);
 
     credPoolAddress = ethers.utils.getContractAddress({
       from: BILLIONAIRE_ADDRESS,
@@ -51,11 +51,11 @@ describe("CredPoolV4 contract", function () {
     // await DAI.approve(lender.address, LENDING_DAI);
     // transfer 10K DAI to lender
     // await DAI.connect(billionaireSigner).transfer(lender.address, LENDING_DAI);
-    hardhatCredPoolV4 = await CredPoolV4.deploy(DAI_ADDRESS);
-    await hardhatCredPoolV4.deployed();
+    hardhatCredPoolV5 = await CredPoolV5.deploy(DAI_ADDRESS);
+    await hardhatCredPoolV5.deployed();
 
-    hardhatCTokenV2 = await CTokenV2.deploy(credPoolAddress);
-    await hardhatCTokenV2.deployed();
+    hardhatCTokenV3 = await CTokenV3.deploy(credPoolAddress);
+    await hardhatCTokenV3.deployed();
   });
 
   // TODO: have to create a state specific workflow
@@ -65,27 +65,27 @@ describe("CredPoolV4 contract", function () {
   // let credPoolAddressETHBalance = await ethers.provider.getBalance(credPoolAddress);
   // credPoolAddressETHBalance = credPoolAddressETHBalance.toString();
   // console.log(credPoolAddressETHBalance);
-  describe("Deployment of CredPoolV4 & CTokenV2 & owner establishment for CredPoolV4", function () {
+  describe("Deployment of CredPoolV5 & CTokenV3 & owner establishment for CredPoolV5", function () {
     it("Should set the right owner", async function () {
-      expect(await hardhatCredPoolV4.owner()).to.equal(BILLIONAIRE_ADDRESS);
+      expect(await hardhatCredPoolV5.owner()).to.equal(BILLIONAIRE_ADDRESS);
     });
   });
 
-  describe("Testing the CredPoolV4 views", function () {
+  describe("Testing the CredPoolV5 views", function () {
     it("Should get pool DAI balance and it should be equal to 300k", async function () {
-      expect(await hardhatCredPoolV4.getDAIBalance()).to.equal(INITIAL_DAI);
+      expect(await hardhatCredPoolV5.getDAIBalance()).to.equal(INITIAL_DAI);
     });
 
-    it("Should get pool CTokenV2s balance and it should be equal to 300k", async function () {
-      expect(await hardhatCredPoolV4.getCredTokenBalance(hardhatCTokenV2.address)).to.equal(INITIAL_CTOKENS);
+    it("Should get pool CTokenV3s balance and it should be equal to 300k", async function () {
+      expect(await hardhatCredPoolV5.getCredTokenBalance(hardhatCTokenV3.address)).to.equal(INITIAL_CTOKENS);
     });
 
     it("Should get borrower DAI balance and it should be equal to 0", async function () {
-      expect(await hardhatCredPoolV4.connect(borrower).getUserDAIBalance()).to.equal(0);
+      expect(await hardhatCredPoolV5.connect(borrower).getUserDAIBalance()).to.equal(0);
     });
 
-    it("Should get borrower CTokenV2s balance and it should be equal to 0", async function () {
-      expect(await hardhatCredPoolV4.connect(borrower).getUserCredTokenBalance(hardhatCTokenV2.address)).to.equal(0);
+    it("Should get borrower CTokenV3s balance and it should be equal to 0", async function () {
+      expect(await hardhatCredPoolV5.connect(borrower).getUserCredTokenBalance(hardhatCTokenV3.address)).to.equal(0);
     });
   });
 
@@ -94,12 +94,12 @@ describe("CredPoolV4 contract", function () {
       expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI);
     });
 
-    it("Should set the initial reserve pool CTokenV2 balance to 300k", async function () {
-      expect(await hardhatCTokenV2.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS);
+    it("Should set the initial reserve pool CTokenV3 balance to 300k", async function () {
+      expect(await hardhatCTokenV3.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS);
     });
 
-    it("Should set the initial supply of CTokenV2s to 300k", async function () {
-      expect(await hardhatCTokenV2.totalSupply()).to.equal(INITIAL_CTOKENS);
+    it("Should set the initial supply of CTokenV3s to 300k", async function () {
+      expect(await hardhatCTokenV3.totalSupply()).to.equal(INITIAL_CTOKENS);
     });
 
     it("Borrower should have zero DAI balance", async function (){
@@ -109,12 +109,12 @@ describe("CredPoolV4 contract", function () {
 
   describe("State 1: Borrower borrowing transactions", function () {
     before(async () => {
-      // borrowing from the CredPoolV4
-      await hardhatCredPoolV4.connect(borrower).borrow(BORROWING_DAI, hardhatCTokenV2.address);
+      // borrowing from the CredPoolV5
+      await hardhatCredPoolV5.connect(borrower).borrow(BORROWING_DAI, hardhatCTokenV3.address);
     });
 
     it("Should record this transaction in borrowTransactionMap", async function () {
-      const transactions = await hardhatCredPoolV4.connect(borrower).getUserBorrowTransactions();
+      const transactions = await hardhatCredPoolV5.connect(borrower).getUserBorrowTransactions();
       expect(transactions.length).to.equal(1);
     });
 
@@ -126,13 +126,13 @@ describe("CredPoolV4 contract", function () {
     it("Should increase the borrower DAI balance by 1k", async function () {
       // check the borrower DAI balance
       expect(await DAI.balanceOf(borrower.address)).to.equal(BORROWING_DAI);
-      expect(await hardhatCredPoolV4.connect(borrower).getUserDAIBalance()).to.equal(BORROWING_DAI);
+      expect(await hardhatCredPoolV5.connect(borrower).getUserDAIBalance()).to.equal(BORROWING_DAI);
     });
 
-    it("Should increase the reserve CTokenV2s balance by 1k", async function () {
-      expect(await hardhatCTokenV2.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS + BORROWING_DAI);
+    it("Should increase the reserve CTokenV3s balance by 1k", async function () {
+      expect(await hardhatCTokenV3.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS + BORROWING_DAI);
       // TODO: why is the total supply not increasing ?
-      // expect(await hardhatCTokenV2.totalSupply()).to.equal(INITIAL_CTOKENS);
+      // expect(await hardhatCTokenV3.totalSupply()).to.equal(INITIAL_CTOKENS);
     });
   });
 
@@ -143,12 +143,12 @@ describe("CredPoolV4 contract", function () {
       // lender approving CredPoolV2 to spend DAI
       await DAI.connect(lender).approve(credPoolAddress, LENDING_DAI);
       // lender depositing to the CredPoolV2
-      await hardhatCredPoolV4.connect(lender).approveDAITransfer(LENDING_DAI);
-      await hardhatCredPoolV4.connect(lender).deposit(LENDING_DAI, hardhatCTokenV2.address);
+      await hardhatCredPoolV5.connect(lender).approveDAITransfer(LENDING_DAI);
+      await hardhatCredPoolV5.connect(lender).deposit(LENDING_DAI, hardhatCTokenV3.address);
     });
 
     it("Should record this transaction in depositTransactionMap", async function () {
-      const transactions = await hardhatCredPoolV4.connect(lender).getUserDepositTransactions();
+      const transactions = await hardhatCredPoolV5.connect(lender).getUserDepositTransactions();
       expect(transactions.length).to.equal(1);
     });
 
@@ -161,13 +161,13 @@ describe("CredPoolV4 contract", function () {
       expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI);
     });
 
-    it("Should decrease the reserve CTokenV2s balance by 1k", async function () {
-      expect(await hardhatCTokenV2.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS);
+    it("Should decrease the reserve CTokenV3s balance by 1k", async function () {
+      expect(await hardhatCTokenV3.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS);
     });
 
-    it("Should increase the lender CTokenV2s balance by 1k", async function () {
-      expect(await hardhatCTokenV2.balanceOf(lender.address)).to.equal(LENDING_DAI);
-      expect(await hardhatCredPoolV4.connect(lender).getUserCredTokenBalance(hardhatCTokenV2.address)).to.equal(LENDING_DAI);
+    it("Should increase the lender CTokenV3s balance by 1k", async function () {
+      expect(await hardhatCTokenV3.balanceOf(lender.address)).to.equal(LENDING_DAI);
+      expect(await hardhatCredPoolV5.connect(lender).getUserCredTokenBalance(hardhatCTokenV3.address)).to.equal(LENDING_DAI);
     });
   });
 
@@ -175,9 +175,9 @@ describe("CredPoolV4 contract", function () {
     before(async () => {
       // we approve the CredPoolV2 to move DAI funds from borrower
       await DAI.connect(borrower).approve(credPoolAddress, BORROWING_DAI);
-      await hardhatCredPoolV4.connect(borrower).approveDAITransfer(LENDING_DAI);
+      await hardhatCredPoolV5.connect(borrower).approveDAITransfer(LENDING_DAI);
       // TODO: have to streamline the transaction_id workflow in the tests
-      await hardhatCredPoolV4.connect(borrower).repay(1, hardhatCTokenV2.address);
+      await hardhatCredPoolV5.connect(borrower).repay(1, hardhatCTokenV3.address);
     });
 
     it("Should increase the reserve DAI pool size by 1k", async function () {
@@ -190,18 +190,18 @@ describe("CredPoolV4 contract", function () {
       expect(await DAI.balanceOf(borrower.address)).to.equal(0);
     });
 
-    it("Should decrease the reserve CTokenV2s balance by 1k", async function () {
-      expect(await hardhatCTokenV2.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS-BORROWING_DAI);
+    it("Should decrease the reserve CTokenV3s balance by 1k", async function () {
+      expect(await hardhatCTokenV3.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS-BORROWING_DAI);
     });
   });
 
   describe("State 4: Lender withdrawing transactions", function () {
     before(async () => {
-      // approve CTokenV2 spend to the creditPool
-      await hardhatCTokenV2.connect(lender).approve(credPoolAddress, INITIAL_DAI);
-      await hardhatCredPoolV4.connect(lender).approveCredTokenTransfer(LENDING_DAI, hardhatCTokenV2.address);
+      // approve CTokenV3 spend to the creditPool
+      await hardhatCTokenV3.connect(lender).approve(credPoolAddress, INITIAL_DAI);
+      await hardhatCredPoolV5.connect(lender).approveCredTokenTransfer(LENDING_DAI, hardhatCTokenV3.address);
       // TODO: have to streamline the transaction_id workflow in the tests
-      await hardhatCredPoolV4.connect(lender).withdraw(1, hardhatCTokenV2.address);
+      await hardhatCredPoolV5.connect(lender).withdraw(1, hardhatCTokenV3.address);
     });
 
     it("Lender should have 1k DAI balance", async function (){
@@ -213,13 +213,13 @@ describe("CredPoolV4 contract", function () {
       expect(await DAI.balanceOf(credPoolAddress)).to.equal(INITIAL_DAI);
     });
 
-    it("Should increase the reserve CTokenV2s balance by 1k", async function () {
-      expect(await hardhatCTokenV2.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS);
+    it("Should increase the reserve CTokenV3s balance by 1k", async function () {
+      expect(await hardhatCTokenV3.balanceOf(credPoolAddress)).to.equal(INITIAL_CTOKENS);
     });
 
-    it("Should decrease the lender CTokenV2 balance to zero", async function () {
-      // check the lender CTokenV2 balance
-      expect(await hardhatCTokenV2.balanceOf(borrower.address)).to.equal(0);
+    it("Should decrease the lender CTokenV3 balance to zero", async function () {
+      // check the lender CTokenV3 balance
+      expect(await hardhatCTokenV3.balanceOf(borrower.address)).to.equal(0);
     });
   });
 });
