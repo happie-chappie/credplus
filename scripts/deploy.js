@@ -77,7 +77,8 @@ async function main() {
   // We also save the contract's artifacts and address in the frontend directory
   saveFrontendFiles(token, 'Token', 'Token');
   saveFrontendFiles(credPoolV4, 'Pool', 'CredPoolV4');
-  saveFrontendFiles(ctokenV2, 'CTokenV2', 'CTokenV2');
+  // TODO: got to rename the slug
+  saveFrontendFiles(ctokenV2, 'CToken', 'CTokenV2');
 }
 
 function saveFrontendFiles(token, slug, ContractName) {
