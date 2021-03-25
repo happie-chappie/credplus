@@ -268,6 +268,8 @@ export class Dapp extends React.Component {
     const daiBalance = await this._pool.getDAIBalance();
     const ctokenBalance = await this._pool.getCredTokenBalance(CTokenContractAddress.CToken);
     const daiAddress = await this._pool.DAI_ADDRESS();
+    const [startDate, endDate] = await this._pool.getPoolMaturityDates();
+    const interestRate = await this._pool.getCurrentInterestRateView();
 
     this._dai = new ethers.Contract(
       daiAddress,
@@ -275,7 +277,7 @@ export class Dapp extends React.Component {
       this._provider.getSigner(0)
     );
 
-    this.setState({ poolData: { daiBalance, ctokenBalance} });
+    this.setState({ poolData: { daiBalance, ctokenBalance, startDate, endDate, interestRate} });
   }
 
   async _updateBalance() {

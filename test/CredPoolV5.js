@@ -87,6 +87,15 @@ describe("CredPoolV5 contract", function () {
     it("Should get borrower CTokenV3s balance and it should be equal to 0", async function () {
       expect(await hardhatCredPoolV5.connect(borrower).getUserCredTokenBalance(hardhatCTokenV3.address)).to.equal(0);
     });
+
+    it("Should set the current interest rate to 10", async function (){
+      expect(await hardhatCredPoolV5.getCurrentInterestRateView()).to.equal(10);
+    });
+
+    it("Should set the pool start date and end date", async function (){
+      const [startdate, enddate] = await hardhatCredPoolV5.getPoolMaturityDates();
+      expect(startdate.toNumber()).to.be.a('number');
+    });
   });
 
   describe("State 0: Initial state of the reserve pool", function () {
@@ -115,6 +124,7 @@ describe("CredPoolV5 contract", function () {
 
     it("Should record this transaction in borrowTransactionMap", async function () {
       const transactions = await hardhatCredPoolV5.connect(borrower).getUserBorrowTransactions();
+      // console.log(transactions[0].totalAmount.toString());
       expect(transactions.length).to.equal(1);
     });
 
@@ -173,6 +183,12 @@ describe("CredPoolV5 contract", function () {
 
   describe("State 3: Borrower repaying transactions", function () {
     before(async () => {
+      // moving time by 10 days
+      const tenDays = 10 * 24 * 60 * 60;
+      await hre.network.provider.request({
+	  method: "evm_increaseTime",
+	  params: [tenDays]
+      });
       // we approve the CredPoolV2 to move DAI funds from borrower
       await DAI.connect(borrower).approve(credPoolAddress, BORROWING_DAI);
       await hardhatCredPoolV5.connect(borrower).approveDAITransfer(LENDING_DAI);

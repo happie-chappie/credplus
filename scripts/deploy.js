@@ -58,27 +58,28 @@ async function main() {
   console.log("DAI balance:", (daiBalance));
   await DAI.approve(credPoolAddress, INITIAL_DAI);
 
-  const CredPoolV4 = await ethers.getContractFactory("CredPoolV4", deployer);
-  const credPoolV4 = await CredPoolV4.deploy(DAI_ADDRESS);
+  const CredPoolV5 = await ethers.getContractFactory("CredPoolV5", deployer);
+  const credPoolV4 = await CredPoolV5.deploy(DAI_ADDRESS);
   await credPoolV4.deployed();
 
-  const CTokenV2 = await ethers.getContractFactory("CTokenV2");
-  const ctokenV2 = await CTokenV2.deploy(credPoolV4.address);
+  const CTokenV3 = await ethers.getContractFactory("CTokenV3");
+  const ctokenV2 = await CTokenV3.deploy(credPoolV4.address);
   await ctokenV2.deployed();
 
   const Token = await ethers.getContractFactory("Token");
   const token = await Token.deploy();
   await token.deployed();
 
-  console.log("CredPoolV4 address:", credPoolV4.address);
-  console.log("CTokenV2 address:", ctokenV2.address);
+  console.log("CredPoolV5 address:", credPoolV4.address);
+  console.log("CTokenV3 address:", ctokenV2.address);
   console.log("Token address:", token.address);
 
   // We also save the contract's artifacts and address in the frontend directory
   saveFrontendFiles(token, 'Token', 'Token');
-  saveFrontendFiles(credPoolV4, 'Pool', 'CredPoolV4');
+  saveFrontendFiles(credPoolV4, 'Pool', 'CredPoolV5');
   // TODO: got to rename the slug
-  saveFrontendFiles(ctokenV2, 'CToken', 'CTokenV2');
+  // TODO: the slug has to CToken without the versioning
+  saveFrontendFiles(ctokenV2, 'CToken', 'CTokenV3');
 }
 
 function saveFrontendFiles(token, slug, ContractName) {

@@ -46,16 +46,18 @@ export default function Variants({state}) {
 	// variant="outlined"
 	elevation={0}
       >
-	<Typography variant="h4">  March 2020 Pool </Typography>
+	<Typography variant="h4">  March-April 2021 Pool </Typography>
 	<Divider />
 	<TableContainer component={Paper}>
 	  <Table className={classes.table} aria-label="simple table">
+	    {/*
 	    <TableHead>
 	      <TableRow>
 		<TableCell>Token</TableCell>
 		<TableCell align="right">Pool Size</TableCell>
 	      </TableRow>
 	    </TableHead>
+	    */}
 	    {state.tokenData && state.poolData && state.walletData && (
 	    <TableBody>
 	      <TableRow key="1">
@@ -69,6 +71,24 @@ export default function Variants({state}) {
 		  CToken
 		</TableCell>
 		<TableCell align="right">{state.poolData.ctokenBalance.toString()}</TableCell>
+	      </TableRow>
+	      <TableRow key="4">
+		<TableCell component="th" scope="row">
+		  Start Date
+		</TableCell>
+		<TableCell align="right">{new Date(state.poolData.startDate.toNumber()*1000).toLocaleDateString("en-US")}</TableCell>
+	      </TableRow>
+	      <TableRow key="5">
+		<TableCell component="th" scope="row">
+		  Start Date
+		</TableCell>
+		<TableCell align="right">{new Date(state.poolData.endDate.toNumber()*1000).toLocaleDateString("en-US")}</TableCell>
+	      </TableRow>
+	      <TableRow key="6">
+		<TableCell component="th" scope="row">
+		  Interest Rate
+		</TableCell>
+		<TableCell align="right">{state.poolData.interestRate.toString()}%</TableCell>
 	      </TableRow>
 	    </TableBody>)}
 	  </Table>
